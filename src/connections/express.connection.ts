@@ -1,7 +1,12 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyPraser from 'body-parser';
+
+import ExpressError from '../utils/ErrorHandling/expressError.utils';
+import ExpressErrorMidelleware from '../middlewares/errorHandle.error';
+
+import adminRoutes from '../routes/admin.routes';
 
 export default class ExpressConnection {
   private app: Application;
@@ -20,9 +25,14 @@ export default class ExpressConnection {
   }
 
   private routes() {
-    this.app.get('/', (req: Request, res: Response) => {
-      res.send('Hello World');
+    this.app.get('/test', (req: Request, res: Response, next: NextFunction) => {
+      next(new ExpressError(401, 'Test for error handling'));
     });
+    this.app.use('/admin', adminRoutes);
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      next(new ExpressError(404, 'Not Found'));
+    });
+    this.app.use(ExpressErrorMidelleware);
   }
 
   public start(port: number) {
