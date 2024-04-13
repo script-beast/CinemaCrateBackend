@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import ErrorInterface from '../interfaces/express/error.interface';
+import ExpressResponse from '../libs/express/response.libs';
 
 const ErrorHandlingMidelware = (
   err: ErrorInterface,
@@ -7,12 +8,9 @@ const ErrorHandlingMidelware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const {
-    status = 500,
-    error = 'Internal Server Error',
-    errorDev = err.message,
-  } = err;
-  res.status(status).send({ error, errorDev });
+  console.log(err);
+  const { error = 'Internal Server Error', errorDev = err.message } = err;
+  ExpressResponse.internalServerError(res, error, errorDev as string);
 };
 
 export default ErrorHandlingMidelware;

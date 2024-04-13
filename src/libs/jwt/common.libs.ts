@@ -15,7 +15,7 @@ class jwtCommon {
     });
   };
 
-  public static genrateRefreshToken: (id: mongoose.Types.ObjectId) => string = (
+  public static generateRefreshToken: (id: mongoose.Types.ObjectId) => string = (
     id: mongoose.Types.ObjectId,
   ) => {
     return jwt.sign({ id }, jwtCommon.jwtRefreshSecret, {

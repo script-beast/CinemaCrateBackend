@@ -3,10 +3,10 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "baseUrl": "src",
-    "outDir": "dist",
+    "outDir": "build",
     "sourceMap": true,
     "noImplicitAny": false,
-    "strict": true,
+    "strict": true
   },
   "include": ["src/**/*"]
 }

@@ -6,7 +6,8 @@ import jwtCommon from '../../libs/jwt/common.libs';
 import bcryptCommon from '../../libs/bcrypt/common.libs';
 
 import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
-import ExpressError from '../../utils/ErrorHandling/expressError.utils';
+
+import ExpressResponse from '../../libs/express/response.libs';
 
 class CredController {
   public register = catchAsync(async (req: Request, res: Response) => {
@@ -14,7 +15,7 @@ class CredController {
 
     const existingAdmin = await adminModel.findOne({ email });
 
-    if (existingAdmin) throw new ExpressError(400, 'Admin already exists');
+    if (existingAdmin) ExpressResponse.badRequest(res, 'Admin already exists');
 
     const hashedPassword = await bcryptCommon.hashingPassword(password);
 
@@ -26,7 +27,7 @@ class CredController {
 
     await admin.save();
 
-    res.status(201).json({ msg: 'Admin created' });
+    ExpressResponse.created(res, 'Admin created successfully');
   });
 
   public login = catchAsync(async (req: Request, res: Response) => {
@@ -34,18 +35,18 @@ class CredController {
 
     const admin = await adminModel.findOne({ email });
 
-    if (!admin) throw new ExpressError(400, 'Invalid credentials');
+    if (!admin) return ExpressResponse.badRequest(res, 'No Account Found');
 
     const isMatch = await bcryptCommon.comparePassword(
       password,
       admin.password,
     );
 
-    if (!isMatch) throw new ExpressError(400, 'Invalid credentials');
+    if (!isMatch) return ExpressResponse.badRequest(res, 'Invalid credentials');
 
     const token = jwtCommon.generateToken(admin._id);
 
-    res.status(200).json({ token });
+    res.status(200).json({ result: token });
   });
 }
 

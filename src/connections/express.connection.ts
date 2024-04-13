@@ -3,10 +3,11 @@ import cors from 'cors';
 import morgan from 'morgan';
 import bodyPraser from 'body-parser';
 
-import ExpressError from '../utils/ErrorHandling/expressError.utils';
+import ExpressError from '../libs/express/error.libs';
 import ExpressErrorMidelleware from '../middlewares/errorHandle.error';
 
 import adminRoutes from '../routes/admin.routes';
+import userRoutes from '../routes/user.routes';
 
 export default class ExpressConnection {
   private app: Application;
@@ -29,6 +30,7 @@ export default class ExpressConnection {
       next(new ExpressError(401, 'Test for error handling'));
     });
     this.app.use('/admin', adminRoutes);
+    this.app.use('/user', userRoutes);
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       next(new ExpressError(404, 'Not Found'));
     });

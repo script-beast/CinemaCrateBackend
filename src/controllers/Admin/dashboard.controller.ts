@@ -8,7 +8,6 @@ import premiumCrateModel from '../../models/premiumCrate.model';
 import userModel from '../../models/user.model';
 
 import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
-import ExpressError from '../../utils/ErrorHandling/expressError.utils';
 
 class DashboardController {
   public getDashboard = catchAsync(async (req: Request, res: Response) => {

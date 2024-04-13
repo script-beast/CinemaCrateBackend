@@ -22,27 +22,21 @@ const userDataSchema = new mongoose.Schema<userDataType>(
     },
     address: {
       type: String,
-      required: true,
     },
     city: {
       type: String,
-      required: true,
     },
     state: {
       type: String,
-      required: true,
     },
     country: {
       type: String,
-      required: true,
     },
     zipNumber: {
       type: Number,
-      required: true,
     },
     company: {
       type: String,
-      required: true,
     },
     crate: {
       type: [mongoose.Schema.Types.ObjectId],

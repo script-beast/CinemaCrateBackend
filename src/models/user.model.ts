@@ -6,11 +6,11 @@ const userSchema = new mongoose.Schema<userType>(
     userDataId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'userData',
-      required: true,
     },
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     name: {
       type: String,
@@ -26,23 +26,21 @@ const userSchema = new mongoose.Schema<userType>(
     },
     isVerified: {
       type: Boolean,
-      required: true,
+      default: false,
     },
     verificationCode: {
       type: Number,
-      required: true,
     },
     verificationCodeExpires: {
       type: Date,
-      required: true,
     },
     status: {
       type: String,
-      required: true,
+      enum: ['active', 'suspended', 'deleted'],
+      default: 'active',
     },
     remark: {
       type: String,
-      required: true,
     },
   },
   {
