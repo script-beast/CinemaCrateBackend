@@ -36,10 +36,6 @@ const transactionSchema = new mongoose.Schema<transactionType>(
       type: String,
       required: true,
     },
-    modeOfPayment: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,

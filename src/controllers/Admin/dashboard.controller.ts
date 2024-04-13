@@ -8,6 +8,7 @@ import premiumCrateModel from '../../models/premiumCrate.model';
 import userModel from '../../models/user.model';
 
 import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
+import ExpressResponse from '../../libs/express/response.libs';
 
 class DashboardController {
   public getDashboard = catchAsync(async (req: Request, res: Response) => {
@@ -21,7 +22,7 @@ class DashboardController {
     const totalLimitedCrates = await limitedCrateModel.countDocuments();
     const totalPremiumCrates = await premiumCrateModel.countDocuments();
 
-    res.status(200).json({
+    return ExpressResponse.success(res, 'Success', {
       totalUsers,
       totalOrders,
       totalContacts,

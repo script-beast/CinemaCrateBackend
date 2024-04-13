@@ -15,13 +15,12 @@ class jwtCommon {
     });
   };
 
-  public static generateRefreshToken: (id: mongoose.Types.ObjectId) => string = (
-    id: mongoose.Types.ObjectId,
-  ) => {
-    return jwt.sign({ id }, jwtCommon.jwtRefreshSecret, {
-      expiresIn: jwtCommon.jwtRefreshExpiresIn,
-    });
-  };
+  public static generateRefreshToken: (id: mongoose.Types.ObjectId) => string =
+    (id: mongoose.Types.ObjectId) => {
+      return jwt.sign({ id }, jwtCommon.jwtRefreshSecret, {
+        expiresIn: jwtCommon.jwtRefreshExpiresIn,
+      });
+    };
 
   public static verifyToken = (token: string) => {
     return jwt.verify(token, jwtCommon.jwtSecret);

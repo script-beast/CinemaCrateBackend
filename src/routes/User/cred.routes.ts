@@ -19,7 +19,7 @@ const credController = new CredController();
 router.post('/register', validate(registerSchema), credController.register);
 router.post('/login', validate(loginSchema), credController.login);
 router.post(
-  '/generateverificationOTP',
+  '/generateVerificationOTP',
   validate(generateverificationOTPSchema),
   credController.generateverificationOTP,
 );

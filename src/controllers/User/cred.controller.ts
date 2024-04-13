@@ -33,7 +33,10 @@ class CredController {
 
     // generate referral code 6 characters long
 
-    let referralCode = Math.random().toString(36).substring(2, 12).toUpperCase();
+    let referralCode = Math.random()
+      .toString(36)
+      .substring(2, 12)
+      .toUpperCase();
 
     const userData = new userDataModel({
       userId: user._id,

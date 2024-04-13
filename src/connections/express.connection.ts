@@ -27,7 +27,7 @@ export default class ExpressConnection {
 
   private routes() {
     this.app.get('/test', (req: Request, res: Response, next: NextFunction) => {
-      next(new ExpressError(401, 'Test for error handling'));
+      res.json({ message: 'Hello World' });
     });
     this.app.use('/admin', adminRoutes);
     this.app.use('/user', userRoutes);
