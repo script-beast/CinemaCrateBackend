@@ -7,7 +7,7 @@
     "outDir": "build",
     "sourceMap": true,
     "noImplicitAny": false,
-    "strict": false
+    "strict": true,
   },
   "include": ["src/**/*"]
 }
