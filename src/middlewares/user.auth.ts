@@ -6,11 +6,9 @@ import ExpressResponse from '../libs/express/response.libs';
 
 import catchAsync from '../utils/errorHandling/catchAsync.utils';
 
-import adminModel from '../models/admin.model';
+import userModel from '../models/user.model';
 
-// extend Request interface to include userId
-
-const adminAuth = catchAsync(
+const userAuth = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization)
       return ExpressResponse.unauthorized(res, 'Unauthorized');
@@ -27,14 +25,14 @@ const adminAuth = catchAsync(
     if (!mongoose.Types.ObjectId.isValid(decoded.id))
       return ExpressResponse.unauthorized(res, 'Unauthorized');
 
-    const admin = await adminModel.findById(decoded.id);
+    const user = await userModel.findById(decoded.id);
 
-    if (!admin) return ExpressResponse.unauthorized(res, 'Unauthorized');
+    if (!user) return ExpressResponse.unauthorized(res, 'Unauthorized');
 
-    req.userId = admin._id;
+    req.userId = user._id;
 
     next();
   },
 );
 
-export default adminAuth;
+export default userAuth;

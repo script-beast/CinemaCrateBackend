@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from 'express';
 // zod is a TypeScript-first schema declaration and validation library.
 import { Schema } from 'zod';
 
-import catchAsync from '../utils/ErrorHandling/catchAsync.utils';
+import catchAsync from '../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../libs/express/response.libs';
 
 const validate = (schema: Schema) =>

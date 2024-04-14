@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import premiumCrateModel from '../../models/premiumCrate.model';
 
-import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
+import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 class PremiumCrateController {
