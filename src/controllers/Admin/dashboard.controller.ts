@@ -33,4 +33,4 @@ class DashboardController {
   });
 }
 
-export default DashboardController;
+export default new DashboardController();

@@ -46,8 +46,8 @@ class CredController {
 
     const token = jwtCommon.generateToken(admin._id);
 
-    res.status(200).json({ result: token });
+    ExpressResponse.success(res, 'Login successful', { token });
   });
 }
 
-export default CredController;
+export default new CredController();

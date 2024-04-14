@@ -1,6 +1,7 @@
 enum responseCodeEnum {
   success = 200,
   created = 201,
+  appected = 202,
   badRequest = 400,
   unauthorized = 401,
   forbidden = 403,

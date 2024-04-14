@@ -9,6 +9,7 @@ type orderCommonType = {
   gateway: string;
   price: number;
   status: string;
+  product: string;
   createdAt: Date;
   updatedAt: Date;
   __v: number;

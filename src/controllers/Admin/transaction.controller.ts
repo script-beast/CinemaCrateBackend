@@ -1,104 +1,104 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-import userDataModel from '../../models/userData.model';
-import userModel from '../../models/user.model';
 import transactionModel from 'models/transaction.model';
 
 import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 class Transaction {
-  public getTransactions = catchAsync(async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+  public getAllTransactions = catchAsync(
+    async (req: Request, res: Response) => {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
 
-    // I want to populate the userId, storeId, crateId, limitedCrateId fields in the transaction model
-    // and get something like this:
-    // { UserName : 'John Doe', itemName: 'Store 1', product:"store", gateway:"stripe", price: 100, status: "success", paymentId: "1234" }
-    // { UserName : 'John Doe', itemName: 'Crate 1', product:"crate", gateway:"phonepe", price: 200, status: "pending", paymentId: "1234" }
-    // use aggregate to get the above result
+      // I want to populate the userId, storeId, crateId, limitedCrateId fields in the transaction model
+      // and get something like this:
+      // { UserName : 'John Doe', itemName: 'Store 1', product:"store", gateway:"stripe", price: 100, status: "success", paymentId: "1234" }
+      // { UserName : 'John Doe', itemName: 'Crate 1', product:"crate", gateway:"phonepe", price: 200, status: "pending", paymentId: "1234" }
+      // use aggregate to get the above result
 
-    const transactions = await transactionModel.aggregate([
-      {
-        $lookup: {
-          from: 'userData',
-          localField: 'userId',
-          foreignField: '_id',
-          as: 'userData',
+      const transactions = await transactionModel.aggregate([
+        {
+          $lookup: {
+            from: 'user',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'userData',
+          },
         },
-      },
-      {
-        $lookup: {
-          from: 'store',
-          localField: 'storeId',
-          foreignField: '_id',
-          as: 'store',
+        {
+          $lookup: {
+            from: 'store',
+            localField: 'storeId',
+            foreignField: '_id',
+            as: 'store',
+          },
         },
-      },
-      {
-        $lookup: {
-          from: 'crate',
-          localField: 'crateId',
-          foreignField: '_id',
-          as: 'crate',
+        {
+          $lookup: {
+            from: 'crate',
+            localField: 'crateId',
+            foreignField: '_id',
+            as: 'crate',
+          },
         },
-      },
-      {
-        $lookup: {
-          from: 'limitedCrate',
-          localField: 'limitedCrateId',
-          foreignField: '_id',
-          as: 'limitedCrate',
+        {
+          $lookup: {
+            from: 'limitedCrate',
+            localField: 'limitedCrateId',
+            foreignField: '_id',
+            as: 'limitedCrate',
+          },
         },
-      },
-      {
-        $project: {
-          userName: '$userData.name',
-          userEmail: '$userData.email',
-          itemName: {
-            $cond: {
-              if: { $eq: ['$product', 'store'] },
-              then: '$store.name',
-              else: {
-                $cond: {
-                  if: { $eq: ['$product', 'crate'] },
-                  then: '$crate.name',
-                  else: '$limitedCrate.name',
+        {
+          $project: {
+            userName: '$userData.name',
+            userEmail: '$userData.email',
+            itemName: {
+              $cond: {
+                if: { $eq: ['$product', 'store'] },
+                then: '$store.name',
+                else: {
+                  $cond: {
+                    if: { $eq: ['$product', 'crate'] },
+                    then: '$crate.name',
+                    else: '$limitedCrate.name',
+                  },
                 },
               },
             },
-          },
-          product: {
-            $cond: {
-              if: { $eq: ['$product', 'store'] },
-              then: 'Store',
-              else: {
-                $cond: {
-                  if: { $eq: ['$product', 'crate'] },
-                  then: 'Crate',
-                  else: 'Limited Crate',
+            product: {
+              $cond: {
+                if: { $eq: ['$product', 'store'] },
+                then: 'Store',
+                else: {
+                  $cond: {
+                    if: { $eq: ['$product', 'crate'] },
+                    then: 'Crate',
+                    else: 'Limited Crate',
+                  },
                 },
               },
             },
+            gateway: 1,
+            price: 1,
+            status: 1,
+            paymentId: 1,
+            _id: 1,
           },
-          gateway: 1,
-          price: 1,
-          status: 1,
-          paymentId: 1,
-          _id: 1,
         },
-      },
-      {
-        $skip: (page - 1) * limit,
-      },
-      {
-        $limit: limit,
-      },
-    ]);
+        {
+          $skip: (page - 1) * limit,
+        },
+        {
+          $limit: limit,
+        },
+      ]);
 
-    return ExpressResponse.success(res, 'Success', { transactions });
-  });
+      return ExpressResponse.success(res, 'Success', { transactions });
+    },
+  );
 
   public getTransactionById = catchAsync(
     async (req: Request, res: Response) => {
@@ -139,50 +139,35 @@ class Transaction {
     },
   );
 
-  public getTransactionByStore = catchAsync(
+  public getTransactionByProduct = catchAsync(
     async (req: Request, res: Response) => {
-      const storeId: string = req.params.storeId;
-      if (!mongoose.Types.ObjectId.isValid(storeId)) {
-        return ExpressResponse.badRequest(res, 'Invalid store id');
-      }
+      const product: string = req.params.product;
 
-      const transactions = await transactionModel
-        .find({ storeId })
-        .populate('userId storeId');
+      const transactions = await transactionModel.find({ product });
 
       return ExpressResponse.success(res, 'Success', { transactions });
     },
   );
 
-  public getTransactionByCrate = catchAsync(
+  public getTransactionByStatus = catchAsync(
     async (req: Request, res: Response) => {
-      const crateId: string = req.params.crateId;
-      if (!mongoose.Types.ObjectId.isValid(crateId)) {
-        return ExpressResponse.badRequest(res, 'Invalid crate id');
-      }
+      const status: string = req.params.status;
 
-      const transactions = await transactionModel
-        .find({ crateId })
-        .populate('userId crateId');
+      const transactions = await transactionModel.find({ status });
 
       return ExpressResponse.success(res, 'Success', { transactions });
     },
   );
 
-  public getTransactionByLimitedCrate = catchAsync(
+  public getTransactionByGateway = catchAsync(
     async (req: Request, res: Response) => {
-      const limitedCrateId: string = req.params.limitedCrateId;
-      if (!mongoose.Types.ObjectId.isValid(limitedCrateId)) {
-        return ExpressResponse.badRequest(res, 'Invalid limited crate id');
-      }
+      const gateway: string = req.params.gateway;
 
-      const transactions = await transactionModel
-        .find({ limitedCrateId })
-        .populate('userId limitedCrateId');
+      const transactions = await transactionModel.find({ gateway });
 
       return ExpressResponse.success(res, 'Success', { transactions });
     },
   );
 }
 
-export default Transaction;
+export default new Transaction();

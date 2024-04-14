@@ -9,6 +9,8 @@ import ExpressErrorMidelleware from '../middlewares/errorHandle.error';
 import adminRoutes from '../routes/admin.routes';
 import userRoutes from '../routes/user.routes';
 
+import resquestExtend from '../interfaces/express/request.extend.interface';
+
 export default class ExpressConnection {
   private app: Application;
 

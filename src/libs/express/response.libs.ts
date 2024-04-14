@@ -10,6 +10,10 @@ class ExpressResponse {
     res.status(responseCodeEnum.success).json({ msg, data });
   }
 
+  public static accepted(res: Response, msg: string): void {
+    res.status(responseCodeEnum.appected).json({ msg });
+  }
+
   public static badRequest(res: Response, error: string): void {
     res.status(responseCodeEnum.badRequest).json({ error });
   }

@@ -40,7 +40,7 @@ const premiumCrateSchema = new mongoose.Schema<premiumCrateType>(
       required: true,
     },
     category: {
-      type: [String],
+      type: String,
       required: true,
     },
     monthlyPrice: {

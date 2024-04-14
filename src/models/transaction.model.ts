@@ -36,6 +36,11 @@ const transactionSchema = new mongoose.Schema<transactionType>(
       type: String,
       required: true,
     },
+    product: {
+      type: String,
+      required: true,
+      enum: ['store', 'crate', 'limitedCrate'],
+    },
   },
   {
     timestamps: true,

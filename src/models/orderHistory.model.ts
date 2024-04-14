@@ -23,6 +23,7 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     gateway: {
       type: String,
       required: true,
+      enum: ['Stripe', 'Razorpay', 'Gifted'],
     },
     price: {
       type: Number,
@@ -30,6 +31,7 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     },
     status: {
       type: String,
+      enum: ['success', 'failed'],
       required: true,
     },
     desc: {
@@ -39,10 +41,17 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     method: {
       type: String,
       required: true,
+      enum: ['wallet', 'card', 'gift'],
     },
     type: {
       type: String,
       required: true,
+      enum: ['credit', 'debit', 'gift'],
+    },
+    product: {
+      type: String,
+      required: true,
+      enum: ['store', 'crate', 'limitedCrate'],
     },
   },
   { timestamps: true },

@@ -40,7 +40,7 @@ const limitedCrateSchema = new mongoose.Schema<limitedCrateType>(
       required: true,
     },
     category: {
-      type: [String],
+      type: String,
       required: true,
     },
     endTime: {

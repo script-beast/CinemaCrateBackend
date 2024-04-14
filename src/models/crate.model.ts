@@ -40,7 +40,7 @@ const crateSchema = new mongoose.Schema<crateType>(
       required: true,
     },
     category: {
-      type: [String],
+      type: String,
       required: true,
     },
   },

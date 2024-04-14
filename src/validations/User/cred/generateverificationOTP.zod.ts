@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const generateverificationOTPSchema = z
+const generateVerificationOTPSchema = z
   .object({
     email: z
       .string({ required_error: 'Email is required' })
@@ -8,8 +8,8 @@ const generateverificationOTPSchema = z
   })
   .strict();
 
-export default generateverificationOTPSchema;
-type GenerateverificationOTPSchemaType = z.infer<
-  typeof generateverificationOTPSchema
+export default generateVerificationOTPSchema;
+type GenerateVerificationOTPSchemaType = z.infer<
+  typeof generateVerificationOTPSchema
 >;
-export { GenerateverificationOTPSchemaType };
+export { GenerateVerificationOTPSchemaType };

@@ -11,7 +11,7 @@ type crateType = {
   trailer: string;
   isDeleted: Boolean;
   pageCount: number;
-  category: string[];
+  category: string;
   createdAt: Date;
   updatedAt: Date;
   __v: number;

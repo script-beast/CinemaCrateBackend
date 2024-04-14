@@ -11,9 +11,18 @@ import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
+import { RegisterSchemaType } from '../../validations/User/cred/register.zod';
+import { LoginSchemaType } from '../../validations/User/cred/login.zod';
+import { GenerateVerificationOTPSchemaType } from '../../validations/User/cred/generateVerificationOTP.zod';
+import { VerifyOTPSchemaType } from '../../validations/User/cred/verifyOTP.zod';
+import { GenerateResetPassOTPSchemaType } from '../../validations/User/cred/generateResetPassOTP.zod';
+import { ResetPasswordSchemaType } from '../../validations/User/cred/resetPassword.zod';
+import { RefreshTokenSchemaType } from '../../validations/User/cred/refreshToken.zod';
+
 class CredController {
   public register = catchAsync(async (req: Request, res: Response) => {
-    const { name, email, mobile, password, refBy } = req.body;
+    const { name, email, mobile, password, refBy } =
+      req.body as RegisterSchemaType;
 
     const existingUser = await userModel.findOne({ email: email });
 
@@ -65,7 +74,7 @@ class CredController {
   });
 
   public login = catchAsync(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body as LoginSchemaType;
 
     const user = await userModel.findOne({ email });
 
@@ -87,9 +96,9 @@ class CredController {
     ExpressResponse.success(res, 'Login successful', { token, refreshToken });
   });
 
-  public generateverificationOTP = catchAsync(
+  public generateVerificationOTP = catchAsync(
     async (req: Request, res: Response) => {
-      const { email } = req.body;
+      const { email } = req.body as GenerateVerificationOTPSchemaType;
 
       const user = await userModel.findOne({ email });
 
@@ -115,7 +124,7 @@ class CredController {
   );
 
   public verifyOTP = catchAsync(async (req: Request, res: Response) => {
-    const { email, otp } = req.body;
+    const { email, otp } = req.body as VerifyOTPSchemaType;
 
     const user = await userModel.findOne({ email });
 
@@ -142,7 +151,7 @@ class CredController {
 
   public generateResetPassOTP = catchAsync(
     async (req: Request, res: Response) => {
-      const { email } = req.body;
+      const { email } = req.body as GenerateResetPassOTPSchemaType;
 
       const user = await userModel.findOne({ email });
 
@@ -165,7 +174,7 @@ class CredController {
   );
 
   public resetPassword = catchAsync(async (req: Request, res: Response) => {
-    const { email, otp, password } = req.body;
+    const { email, otp, password } = req.body as ResetPasswordSchemaType;
 
     const user = await userModel.findOne({ email });
 
@@ -192,7 +201,7 @@ class CredController {
   });
 
   public refreshToken = catchAsync(async (req: Request, res: Response) => {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.body as RefreshTokenSchemaType;
 
     const decoded = jwtCommon.verifyRefreshToken(refreshToken);
 
@@ -213,4 +222,4 @@ class CredController {
   });
 }
 
-export default CredController;
+export default new CredController();

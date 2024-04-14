@@ -8,9 +8,7 @@ import loginSchema from '../../validations/Admin/cred/login.zod';
 
 const router = express.Router();
 
-const credControllerIns = new credController();
-
-router.post('/register', validate(registerSchema), credControllerIns.register);
-router.post('/login', validate(loginSchema), credControllerIns.login);
+router.post('/register', validate(registerSchema), credController.register);
+router.post('/login', validate(loginSchema), credController.login);
 
 export default router;
