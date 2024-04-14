@@ -7,7 +7,7 @@ import limitedCrateModel from '../../models/limitedCrate.model';
 import premiumCrateModel from '../../models/premiumCrate.model';
 import userModel from '../../models/user.model';
 
-import catchAsync from '../../utils/errorHandling/catchAsync.utils';
+import catchAsync from 'utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 class DashboardController {

@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import orderHistoryModel from '../../models/orderHistory.model';
 
-import catchAsync from '../../utils/errorHandling/catchAsync.utils';
+import catchAsync from 'utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 class OrderController {
