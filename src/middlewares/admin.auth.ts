@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwtCommon from '../libs/jwt/common.libs';
 import ExpressResponse from '../libs/express/response.libs';
 
-import catchAsync from '../utils/errorHandling/catchAsync.utils';
+import catchAsync from '../utils/ErrorHandling/catchAsync.utils';
 
 import adminModel from '../models/admin.model';
 

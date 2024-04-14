@@ -6,7 +6,7 @@ import validate from '../../middlewares/validation.zod';
 
 import registerSchema from '../../validations/User/cred/register.zod';
 import loginSchema from '../../validations/User/cred/login.zod';
-import generateVerificationOTPSchema from '../../validations/User/cred/generateVerificationOTP.zod';
+import generateVerificationOTPSchema from '../../validations/User/cred/generateverificationOTP.zod';
 import verifyOTPSchema from '../../validations/User/cred/verifyOTP.zod';
 import generateResetPassOTPSchema from '../../validations/User/cred/generateResetPassOTP.zod';
 import resetPasswordSchema from '../../validations/User/cred/resetPassword.zod';
