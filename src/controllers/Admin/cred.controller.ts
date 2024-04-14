@@ -5,7 +5,7 @@ import adminModel from '../../models/admin.model';
 import jwtCommon from '../../libs/jwt/common.libs';
 import bcryptCommon from '../../libs/bcrypt/common.libs';
 
-import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
+import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 

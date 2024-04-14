@@ -5,7 +5,7 @@ import crateModel from '../../models/crate.model';
 import userDataModel from '../../models/userData.model';
 import orderHistoryModel from '../../models/orderHistory.model';
 
-import catchAsync from '../../utils/ErrorHandling/catchAsync.utils';
+import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 class CrateController {
