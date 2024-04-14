@@ -27,3 +27,5 @@ yarn-error.log*
 .env_Prod
 
 yt.txt
+
+*.tsx
