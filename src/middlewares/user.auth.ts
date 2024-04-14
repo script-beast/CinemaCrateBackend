@@ -19,15 +19,11 @@ const userAuth = catchAsync(
 
     if (!decoded) return ExpressResponse.unauthorized(res, 'Unauthorized');
 
-    if (typeof decoded === 'string') {
-      ExpressResponse.unauthorized(res, 'Unauthorized');
-      return;
-    }
+    if (typeof decoded === 'string')
+      return ExpressResponse.unauthorized(res, 'Unauthorized');
 
-    if (!mongoose.Types.ObjectId.isValid(decoded.id)) {
-      ExpressResponse.unauthorized(res, 'Unauthorized');
-      return;
-    }
+    if (!mongoose.Types.ObjectId.isValid(decoded.id))
+      return ExpressResponse.unauthorized(res, 'Unauthorized');
 
     const user = await userModel.findById(decoded.id);
 

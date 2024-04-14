@@ -13,7 +13,7 @@ import ExpressResponse from '../../libs/express/response.libs';
 
 import { RegisterSchemaType } from '../../validations/User/cred/register.zod';
 import { LoginSchemaType } from '../../validations/User/cred/login.zod';
-import { GenerateVerificationOTPSchemaType } from '../../validations/User/cred/generateVerificationOTP.zod';
+import { GenerateVerificationOTPSchemaType } from '../../validations/User/cred/generateverificationOTP.zod';
 import { VerifyOTPSchemaType } from '../../validations/User/cred/verifyOTP.zod';
 import { GenerateResetPassOTPSchemaType } from '../../validations/User/cred/generateResetPassOTP.zod';
 import { ResetPasswordSchemaType } from '../../validations/User/cred/resetPassword.zod';
