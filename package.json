@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
+    "build:prod": "tsc --build tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },

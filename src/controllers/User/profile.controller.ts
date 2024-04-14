@@ -7,7 +7,7 @@ import userDataModel from '../../models/userData.model';
 
 import bcryptCommon from '../../libs/bcrypt/common.libs';
 
-import catchAsync from 'utils/errorHandling/catchAsync.utils';
+import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 

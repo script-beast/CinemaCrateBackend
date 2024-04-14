@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import storeModel from '../../models/store.model';
 import orderHistoryModel from 'models/orderHistory.model';
 
-import catchAsync from 'utils/errorHandling/catchAsync.utils';
+import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 class StoreController {
