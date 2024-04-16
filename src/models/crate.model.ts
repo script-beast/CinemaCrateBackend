@@ -15,6 +15,10 @@ const crateSchema = new mongoose.Schema<crateType>(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+      required: true,
+    },
     plot: {
       type: String,
       required: true,
@@ -33,15 +37,11 @@ const crateSchema = new mongoose.Schema<crateType>(
     },
     isDeleted: {
       type: Boolean,
-      required: true,
+      default: false,
     },
     pageCount: {
       type: Number,
-      required: true,
-    },
-    category: {
-      type: String,
-      required: true,
+      default: 0,
     },
   },
   {

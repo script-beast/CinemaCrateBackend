@@ -33,11 +33,11 @@ const limitedCrateSchema = new mongoose.Schema<limitedCrateType>(
     },
     isDeleted: {
       type: Boolean,
-      required: true,
+      default: false,
     },
     pageCount: {
       type: Number,
-      required: true,
+      default: 0,
     },
     category: {
       type: String,

@@ -8,6 +8,9 @@ import orderHistoryModel from '../../models/orderHistory.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import { ReqCrateSchemaType } from '../../validations/Admin/crate/reqCrate.zod';
+import { GiftCrateSchemaType } from '../../validations/Admin/crate/giftCrate.zod';
+
 class CrateController {
   public getAllCrates = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
@@ -75,19 +78,10 @@ class CrateController {
   });
 
   public createCrate = catchAsync(async (req: Request, res: Response) => {
-    const {
-      name,
-      price,
-      genre,
-      plot,
-      link,
-      casts,
-      trailer,
-      pageCount,
-      category,
-    } = req.body;
+    const { name, price, genre, plot, link, casts, trailer, category } =
+      req.body as ReqCrateSchemaType;
 
-    const newCrate = await crateModel.create({
+    await crateModel.create({
       name,
       price,
       genre,
@@ -95,7 +89,6 @@ class CrateController {
       link,
       casts,
       trailer,
-      pageCount,
       category,
     });
 
@@ -109,17 +102,8 @@ class CrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
-    const {
-      name,
-      price,
-      genre,
-      plot,
-      link,
-      casts,
-      trailer,
-      pageCount,
-      category,
-    } = req.body;
+    const { name, price, genre, plot, link, casts, trailer, category } =
+      req.body as ReqCrateSchemaType;
 
     const updatedCrate = await crateModel.findByIdAndUpdate(
       id,
@@ -131,7 +115,6 @@ class CrateController {
         link,
         casts,
         trailer,
-        pageCount,
         category,
       },
       {
@@ -211,7 +194,7 @@ class CrateController {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
 
-    const { userId } = req.body;
+    const { userId } = req.body as GiftCrateSchemaType;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return ExpressResponse.badRequest(res, 'Invalid user ID');

@@ -9,7 +9,7 @@ const premiumCrateSchema = new mongoose.Schema<premiumCrateType>(
     },
     price: {
       type: Number,
-      required: true,
+      default: 0,
     },
     genre: {
       type: String,
@@ -33,11 +33,11 @@ const premiumCrateSchema = new mongoose.Schema<premiumCrateType>(
     },
     isDeleted: {
       type: Boolean,
-      required: true,
+      default: false,
     },
     pageCount: {
       type: Number,
-      required: true,
+      default: 0,
     },
     category: {
       type: String,

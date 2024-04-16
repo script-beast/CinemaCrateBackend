@@ -9,9 +9,12 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
+import { RegisterSchemaType } from '../../validations/Admin/cred/register.zod';
+import { LoginSchemaType } from '../../validations/Admin/cred/login.zod';
+
 class CredController {
   public register = catchAsync(async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body as RegisterSchemaType;
 
     const existingAdmin = await adminModel.findOne({ email });
 
@@ -31,7 +34,7 @@ class CredController {
   });
 
   public login = catchAsync(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body as LoginSchemaType;
 
     const admin = await adminModel.findOne({ email });
 
