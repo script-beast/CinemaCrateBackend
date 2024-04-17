@@ -93,7 +93,9 @@ class CredController {
     const token = jwtCommon.generateToken(user._id);
     const refreshToken = jwtCommon.generateRefreshToken(user._id);
 
-    ExpressResponse.success(res, 'Login successful', { token, refreshToken });
+    const result = { token, refreshToken };
+
+    ExpressResponse.success(res, 'Login successful', { result });
   });
 
   public generateVerificationOTP = catchAsync(
@@ -218,7 +220,9 @@ class CredController {
 
     const token = jwtCommon.generateToken(user._id);
 
-    ExpressResponse.success(res, 'Token refreshed successfully', { token });
+    ExpressResponse.success(res, 'Token refreshed successfully', {
+      result: token,
+    });
   });
 }
 

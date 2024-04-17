@@ -11,7 +11,7 @@ class OrderController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const orders = await orderHistoryModel.aggregate([
+    const result = await orderHistoryModel.aggregate([
       {
         $lookup: {
           from: 'user',
@@ -61,19 +61,7 @@ class OrderController {
               },
             },
           },
-          product: {
-            $cond: {
-              if: { $eq: ['$product', 'store'] },
-              then: 'Store',
-              else: {
-                $cond: {
-                  if: { $eq: ['$product', 'crate'] },
-                  then: 'Crate',
-                  else: 'Limited Crate',
-                },
-              },
-            },
-          },
+          product: 1,
           gateway: 1,
           price: 1,
           status: 1,
@@ -91,7 +79,7 @@ class OrderController {
       },
     ]);
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderById = catchAsync(async (req: Request, res: Response) => {
@@ -101,15 +89,15 @@ class OrderController {
       return ExpressResponse.badRequest(res, 'Invalid order id');
     }
 
-    const order = await orderHistoryModel
+    const result = await orderHistoryModel
       .findById(id)
       .populate('userId storeId crateId limitedCrateId');
 
-    if (!order) {
+    if (!result) {
       return ExpressResponse.notFound(res, 'Order not found');
     }
 
-    ExpressResponse.success(res, 'Success', { order });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderByUser = catchAsync(async (req: Request, res: Response) => {
@@ -119,61 +107,61 @@ class OrderController {
       return ExpressResponse.badRequest(res, 'Invalid user id');
     }
 
-    const orders = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ userId })
       .populate('userId storeId crateId limitedCrateId');
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderByProduct = catchAsync(async (req: Request, res: Response) => {
     const { product } = req.params;
 
-    const orders = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ product })
       .populate('userId storeId crateId limitedCrateId');
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderByStatus = catchAsync(async (req: Request, res: Response) => {
     const { status } = req.params;
 
-    const orders = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ status })
       .populate('userId storeId crateId limitedCrateId');
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderByGateway = catchAsync(async (req: Request, res: Response) => {
     const { gateway } = req.params;
 
-    const orders = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ gateway })
       .populate('userId storeId crateId limitedCrateId');
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderByMethod = catchAsync(async (req: Request, res: Response) => {
     const { method } = req.params;
 
-    const orders = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ method })
       .populate('userId storeId crateId limitedCrateId');
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public getOrderByType = catchAsync(async (req: Request, res: Response) => {
     const { type } = req.params;
 
-    const orders = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ type })
       .populate('userId storeId crateId limitedCrateId');
 
-    ExpressResponse.success(res, 'Success', { orders });
+    ExpressResponse.success(res, 'Success', { result });
   });
 }
 

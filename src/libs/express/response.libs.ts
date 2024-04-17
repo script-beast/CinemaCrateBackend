@@ -6,7 +6,7 @@ class ExpressResponse {
     res.status(responseCodeEnum.created).json({ msg });
   }
 
-  public static success(res: Response, msg: string, data: any): void {
+  public static success(res: Response, msg: string, data: object): void {
     res.status(responseCodeEnum.success).json({ msg, data });
   }
 

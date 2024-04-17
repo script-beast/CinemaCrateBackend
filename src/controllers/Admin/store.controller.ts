@@ -12,12 +12,12 @@ class StoreController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const stores = await storeModel
+    const result = await storeModel
       .find({ isDeleted: false })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { stores });
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getSingleStore = catchAsync(async (req: Request, res: Response) => {
@@ -35,7 +35,12 @@ class StoreController {
 
     const orderHistory = await orderHistoryModel.find({ storeId: id });
 
-    return ExpressResponse.success(res, 'Success', { store, orderHistory });
+    const result = {
+      store,
+      orderHistory,
+    };
+
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public createStore = catchAsync(async (req: Request, res: Response) => {

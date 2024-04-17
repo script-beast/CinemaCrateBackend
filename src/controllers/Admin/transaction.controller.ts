@@ -18,7 +18,7 @@ class Transaction {
       // { UserName : 'John Doe', itemName: 'Crate 1', product:"crate", gateway:"phonepe", price: 200, status: "pending", paymentId: "1234" }
       // use aggregate to get the above result
 
-      const transactions = await transactionModel.aggregate([
+      const result = await transactionModel.aggregate([
         {
           $lookup: {
             from: 'user',
@@ -96,7 +96,7 @@ class Transaction {
         },
       ]);
 
-      return ExpressResponse.success(res, 'Success', { transactions });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -107,15 +107,15 @@ class Transaction {
         return ExpressResponse.badRequest(res, 'Invalid transaction id');
       }
 
-      const transaction = await transactionModel
+      const result = await transactionModel
         .findById(id)
         .populate('userId storeId crateId limitedCrateId');
 
-      if (!transaction) {
+      if (!result) {
         return ExpressResponse.notFound(res, 'Transaction not found');
       }
 
-      return ExpressResponse.success(res, 'Success', { transaction });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -129,13 +129,13 @@ class Transaction {
         return ExpressResponse.badRequest(res, 'Invalid user id');
       }
 
-      const transactions = await transactionModel
+      const result = await transactionModel
         .find({ userId })
         .populate('userId storeId crateId limitedCrateId')
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { transactions });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -143,9 +143,9 @@ class Transaction {
     async (req: Request, res: Response) => {
       const product: string = req.params.product;
 
-      const transactions = await transactionModel.find({ product });
+      const result = await transactionModel.find({ product });
 
-      return ExpressResponse.success(res, 'Success', { transactions });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -153,9 +153,9 @@ class Transaction {
     async (req: Request, res: Response) => {
       const status: string = req.params.status;
 
-      const transactions = await transactionModel.find({ status });
+      const result = await transactionModel.find({ status });
 
-      return ExpressResponse.success(res, 'Success', { transactions });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -163,9 +163,9 @@ class Transaction {
     async (req: Request, res: Response) => {
       const gateway: string = req.params.gateway;
 
-      const transactions = await transactionModel.find({ gateway });
+      const result = await transactionModel.find({ gateway });
 
-      return ExpressResponse.success(res, 'Success', { transactions });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 }

@@ -12,12 +12,26 @@ class PremiumCrateController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const premiumCrates = await premiumCrateModel
-        .find({ isDeleted: false })
+      let options = {};
+
+      if (req.query.genre) {
+        options = { ...options, genre: req.query.genre };
+      }
+
+      if (req.query.category) {
+        options = { ...options, category: req.query.category };
+      }
+
+      if (req.query.cast) {
+        options = { ...options, casts: { $in: [req.query.cast] } };
+      }
+
+      const result = await premiumCrateModel
+        .find({ ...options, isDeleted: false })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { premiumCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -25,12 +39,12 @@ class PremiumCrateController {
     async (req: Request, res: Response) => {
       const { category } = req.params;
 
-      const premiumCrates = await premiumCrateModel.find({
+      const result = await premiumCrateModel.find({
         category,
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { premiumCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -38,12 +52,12 @@ class PremiumCrateController {
     async (req: Request, res: Response) => {
       const { genre } = req.params;
 
-      const premiumCrates = await premiumCrateModel.find({
+      const result = await premiumCrateModel.find({
         genre,
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { premiumCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -52,12 +66,12 @@ class PremiumCrateController {
       const { cast } = req.params;
 
       // cast is an array of strings
-      const premiumCrates = await premiumCrateModel.find({
+      const result = await premiumCrateModel.find({
         casts: { $in: [cast] },
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { premiumCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -69,9 +83,13 @@ class PremiumCrateController {
         return ExpressResponse.badRequest(res, 'Invalid ID');
       }
 
-      const premiumCrate = await premiumCrateModel.findById(id);
+      const result = await premiumCrateModel.findById(id);
 
-      return ExpressResponse.success(res, 'Success', { premiumCrate });
+      if (!result) {
+        return ExpressResponse.notFound(res, 'Premium Crate not found');
+      }
+
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -92,7 +110,7 @@ class PremiumCrateController {
         discount,
       } = req.body;
 
-      const premiumCrate = await premiumCrateModel.create({
+      const result = await premiumCrateModel.create({
         name,
         price,
         genre,
@@ -107,7 +125,7 @@ class PremiumCrateController {
         discount,
       });
 
-      return ExpressResponse.success(res, 'Success', { premiumCrate });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -154,12 +172,12 @@ class PremiumCrateController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const premiumCrates = await premiumCrateModel
+      const result = await premiumCrateModel
         .find({ isDeleted: true })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { premiumCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 

@@ -16,42 +16,64 @@ class CrateController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const crates = await crateModel
-      .find({ isDeleted: false })
+    let options = {};
+
+    if (req.query.category) {
+      options = { ...options, category: req.query.category };
+    }
+
+    if (req.query.genre) {
+      options = { ...options, genre: req.query.genre };
+    }
+
+    if (req.query.cast) {
+      options = { ...options, casts: { $in: [req.query.cast] } };
+    }
+
+    const totalPages = Math.ceil(
+      (await crateModel.countDocuments({ ...options, isDeleted: false })) /
+        limit,
+    );
+
+    const result = await crateModel
+      .find({ ...options, isDeleted: false })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { crates });
+    return ExpressResponse.success(res, 'Success', {
+      result,
+      totalPages,
+    });
   });
 
   public getCratesByCategory = catchAsync(
     async (req: Request, res: Response) => {
       const { category } = req.params;
 
-      const crates = await crateModel.find({ category, isDeleted: false });
+      const result = await crateModel.find({ category, isDeleted: false });
 
-      return ExpressResponse.success(res, 'Success', { crates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
   public getCratesByGenre = catchAsync(async (req: Request, res: Response) => {
     const { genre } = req.params;
 
-    const crates = await crateModel.find({ genre, isDeleted: false });
+    const result = await crateModel.find({ genre, isDeleted: false });
 
-    return ExpressResponse.success(res, 'Success', { crates });
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getCratesByCast = catchAsync(async (req: Request, res: Response) => {
     const { cast } = req.params;
 
     // cast is an array of strings
-    const crates = await crateModel.find({
+    const result = await crateModel.find({
       casts: { $in: [cast] },
       isDeleted: false,
     });
 
-    return ExpressResponse.success(res, 'Success', { crates });
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getSingleCrate = catchAsync(async (req: Request, res: Response) => {
@@ -71,10 +93,12 @@ class CrateController {
       crateId: crate._id,
     });
 
-    return ExpressResponse.success(res, 'Success', {
+    const result = {
       crate,
       crateOrderHistory,
-    });
+    };
+
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public createCrate = catchAsync(async (req: Request, res: Response) => {
@@ -153,12 +177,12 @@ class CrateController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const crates = await crateModel
+    const result = await crateModel
       .find({ isDeleted: true })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { crates });
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public restoreCrate = catchAsync(async (req: Request, res: Response) => {

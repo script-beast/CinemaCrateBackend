@@ -7,18 +7,34 @@ import orderHistoryModel from 'models/orderHistory.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import { ReqLimitedCrateSchemaType } from '../../validations/Admin/limitedCrate/reqLimitedCrate.zod';
+
 class LimitedCrateController {
   public getAllLimitedCrates = catchAsync(
     async (req: Request, res: Response) => {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const limitedCrates = await limitedCrateModel
-        .find({ isDeleted: false, endTime: { $gte: new Date() } })
+      let options = {};
+
+      if (req.query.category) {
+        options = { ...options, category: req.query.category };
+      }
+
+      if (req.query.genre) {
+        options = { ...options, genre: req.query.genre };
+      }
+
+      if (req.query.cast) {
+        options = { ...options, casts: { $in: [req.query.cast] } };
+      }
+
+      const result = await limitedCrateModel
+        .find({ ...options, isDeleted: false, endTime: { $gte: new Date() } })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { limitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -27,12 +43,12 @@ class LimitedCrateController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const pastLimitedCrates = await limitedCrateModel
+      const result = await limitedCrateModel
         .find({ isDeleted: false, endTime: { $lt: new Date() } })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { pastLimitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -40,12 +56,12 @@ class LimitedCrateController {
     async (req: Request, res: Response) => {
       const { category } = req.params;
 
-      const limitedCrates = await limitedCrateModel.find({
+      const result = await limitedCrateModel.find({
         category,
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { limitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -53,12 +69,12 @@ class LimitedCrateController {
     async (req: Request, res: Response) => {
       const { occassion } = req.params;
 
-      const limitedCrates = await limitedCrateModel.find({
+      const result = await limitedCrateModel.find({
         occassion,
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { limitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -66,12 +82,12 @@ class LimitedCrateController {
     async (req: Request, res: Response) => {
       const { genre } = req.params;
 
-      const limitedCrates = await limitedCrateModel.find({
+      const result = await limitedCrateModel.find({
         genre,
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { limitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -80,12 +96,12 @@ class LimitedCrateController {
       const { cast } = req.params;
 
       // cast is an array of strings
-      const limitedCrates = await limitedCrateModel.find({
+      const result = await limitedCrateModel.find({
         casts: { $in: [cast] },
         isDeleted: false,
       });
 
-      return ExpressResponse.success(res, 'Success', { limitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -107,10 +123,12 @@ class LimitedCrateController {
         limitedCrateId: limitedCrate._id,
       });
 
-      return ExpressResponse.success(res, 'Success', {
+      const result = {
         limitedCrate,
         limitedCrateOrderHistory,
-      });
+      };
+
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -129,7 +147,7 @@ class LimitedCrateController {
         discountPrice,
         occassion,
         tagLine,
-      } = req.body;
+      } = req.body as ReqLimitedCrateSchemaType;
 
       const newLimitedCrate = await limitedCrateModel.create({
         name,
@@ -171,7 +189,7 @@ class LimitedCrateController {
         discountPrice,
         occassion,
         tagLine,
-      } = req.body;
+      } = req.body as ReqLimitedCrateSchemaType;
 
       const updatedLimitedCrate = await limitedCrateModel.findByIdAndUpdate(
         id,
@@ -225,12 +243,12 @@ class LimitedCrateController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const deletedLimitedCrates = await limitedCrateModel
+      const result = await limitedCrateModel
         .find({ isDeleted: true })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { deletedLimitedCrates });
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 

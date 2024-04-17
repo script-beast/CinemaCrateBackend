@@ -65,7 +65,7 @@ class ProfileController {
   public getProfile = catchAsync(async (req: Request, res: Response) => {
     const id = req.userId;
 
-    const user = await userModel.aggregate([
+    const result = await userModel.aggregate([
       {
         $match: {
           _id: id,
@@ -87,7 +87,6 @@ class ProfileController {
           _id: 1,
           name: 1,
           mobile: 1,
-          isVerified: 1,
           address: '$userData.address' || '',
           city: '$userData.city' || '',
           state: '$userData.state' || '',
@@ -98,9 +97,9 @@ class ProfileController {
       },
     ]);
 
-    if (!user) return ExpressResponse.notFound(res, 'User not found');
+    if (!result) return ExpressResponse.notFound(res, 'User not found');
 
-    return ExpressResponse.success(res, 'Success', user);
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getProfileShort = catchAsync(async (req: Request, res: Response) => {
@@ -120,7 +119,7 @@ class ProfileController {
     }
     const maxdis = 0;
 
-    return ExpressResponse.success(res, 'Success', {
+    const result = {
       _id: user._id,
       wallet: userData.wallet,
       name: user.name,
@@ -128,7 +127,9 @@ class ProfileController {
       defaultDiscount: maxdis,
       cart: userData.cart,
       isAddress,
-    });
+    };
+
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getMyCrates = catchAsync(async (req: Request, res: Response) => {
@@ -138,7 +139,7 @@ class ProfileController {
 
     // get all the crates and limited crates of the user in array of objects
 
-    const crates = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ userId: id })
       .populate('crateId')
       .populate('limitedCrateId')
@@ -146,7 +147,7 @@ class ProfileController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', crates);
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getMyOrders = catchAsync(async (req: Request, res: Response) => {
@@ -154,7 +155,7 @@ class ProfileController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const orderHistory = await orderHistoryModel
+    const result = await orderHistoryModel
       .find({ userId: id })
       .populate('crateId')
       .populate('limitedCrateId')
@@ -163,7 +164,7 @@ class ProfileController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', orderHistory);
+    return ExpressResponse.success(res, 'Success', { result });
   });
 
   public getMyRecuringOrders = catchAsync(
@@ -172,14 +173,14 @@ class ProfileController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const recurringPayments = await recurringPaymentModel
+      const result = await recurringPaymentModel
         .find({ userId: id })
         .populate('premiumCrateId')
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', recurringPayments);
+      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -192,12 +193,12 @@ class ProfileController {
 
     if (!userData) return ExpressResponse.notFound(res, 'User not found');
 
-    const referredUsers = await userModel
+    const result = await userModel
       .find({ referredBy: id })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', referredUsers);
+    return ExpressResponse.success(res, 'Success', { result });
   });
 }
 

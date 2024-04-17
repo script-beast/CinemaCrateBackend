@@ -6,7 +6,7 @@ import userAuth from '../../middlewares/user.auth';
 
 const router = express.Router();
 
-router.get('/all', CrateController.allActiveCrates);
+router.get('/', CrateController.allActiveCrates);
 router.get('/:id', userAuth, CrateController.crateById);
 
 export default router;

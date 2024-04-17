@@ -22,14 +22,16 @@ class DashboardController {
     const totalLimitedCrates = await limitedCrateModel.countDocuments();
     const totalPremiumCrates = await premiumCrateModel.countDocuments();
 
-    return ExpressResponse.success(res, 'Success', {
+    const result = {
       totalUsers,
       totalOrders,
       totalContacts,
       totalCrates,
       totalLimitedCrates,
       totalPremiumCrates,
-    });
+    };
+
+    return ExpressResponse.success(res, 'Success', { result });
   });
 }
 

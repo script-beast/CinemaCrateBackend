@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.use('/', credUserRoutes);
 router.use('/profile', userAuth, profileUserRoutes);
-router.use('/crate', crateUserRoutes);
+router.use('/crates', crateUserRoutes);
 
 export default router;

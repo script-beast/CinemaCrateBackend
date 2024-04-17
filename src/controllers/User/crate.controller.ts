@@ -9,9 +9,17 @@ import ExpressResponse from '../../libs/express/response.libs';
 
 class CrateController {
   public allActiveCrates = catchAsync(async (req: Request, res: Response) => {
-    const crates = await crateModel.find({ isActive: true }).select('-link');
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-    ExpressResponse.success(res, 'Success', crates);
+    const result = await crateModel
+      .find({ isActive: true })
+      .select('-link')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    ExpressResponse.success(res, 'Success', { result });
   });
 
   public crateById = catchAsync(async (req: Request, res: Response) => {
@@ -21,9 +29,13 @@ class CrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
-    const crate = await crateModel.findById(id);
+    const result = await crateModel.findById(id);
 
-    ExpressResponse.success(res, 'Success', crate);
+    if (!result) {
+      return ExpressResponse.notFound(res, 'Crate not found');
+    }
+
+    ExpressResponse.success(res, 'Success', { result });
   });
 }
 
