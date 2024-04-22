@@ -1,4 +1,7 @@
-const authorizenet = require('authorizenet');
+// const authorizenet = require('authorizenet');
+import authorizenet from 'authorizenet';
+// import { APIContracts } from 'authorizenet';
+
 const ApiContracts = authorizenet.APIContracts;
 const ApiControllers = authorizenet.APIControllers;
 
@@ -8,9 +11,11 @@ const oneTimePayment = (cardDetails, product, cardDeduction, user) => {
 
   console.log(cardDetails, product, cardDeduction);
 
-  merchantAuthenticationType.setName(process.env.AUTHORIZE_API_LOGIN_KEY);
+  merchantAuthenticationType.setName(
+    String(process.env.AUTHORIZE_API_LOGIN_KEY),
+  );
   merchantAuthenticationType.setTransactionKey(
-    process.env.AUTHORIZE_API_TRANSACTION_KEY,
+    String(process.env.AUTHORIZE_API_TRANSACTION_KEY),
   );
 
   const creditCard = new ApiContracts.CreditCardType();
@@ -53,7 +58,7 @@ const oneTimePayment = (cardDetails, product, cardDeduction, user) => {
   Item.setQuantity(1);
   Item.setUnitPrice(product.price);
 
-  const lineItems = [];
+  const lineItems: authorizenet.APIContracts.LineItemType[] = [];
   lineItems.push(Item);
 
   const transactionSetting1 = new ApiContracts.SettingType();
@@ -64,7 +69,7 @@ const oneTimePayment = (cardDetails, product, cardDeduction, user) => {
   transactionSetting2.setSettingName('recurringBilling');
   transactionSetting2.setSettingValue('false');
 
-  const transactionSettingList = [];
+  const transactionSettingList: authorizenet.APIContracts.SettingType[] = [];
   transactionSettingList.push(transactionSetting1);
   transactionSettingList.push(transactionSetting2);
 
