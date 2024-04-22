@@ -40,40 +40,7 @@ class CrateController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', {
-      result,
-      totalPages,
-    });
-  });
-
-  public getCratesByCategory = catchAsync(
-    async (req: Request, res: Response) => {
-      const { category } = req.params;
-
-      const result = await crateModel.find({ category, isDeleted: false });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getCratesByGenre = catchAsync(async (req: Request, res: Response) => {
-    const { genre } = req.params;
-
-    const result = await crateModel.find({ genre, isDeleted: false });
-
-    return ExpressResponse.success(res, 'Success', { result });
-  });
-
-  public getCratesByCast = catchAsync(async (req: Request, res: Response) => {
-    const { cast } = req.params;
-
-    // cast is an array of strings
-    const result = await crateModel.find({
-      casts: { $in: [cast] },
-      isDeleted: false,
-    });
-
-    return ExpressResponse.success(res, 'Success', { result });
+    return ExpressResponse.success(res, 'Success', { result, totalPages });
   });
 
   public getSingleCrate = catchAsync(async (req: Request, res: Response) => {
@@ -182,7 +149,14 @@ class CrateController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { result });
+    const totalPages = Math.ceil(
+      (await crateModel.countDocuments({ isDeleted: true })) / limit,
+    );
+
+    return ExpressResponse.success(res, 'Success', {
+      result,
+      totalPages,
+    });
   });
 
   public restoreCrate = catchAsync(async (req: Request, res: Response) => {

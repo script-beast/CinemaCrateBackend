@@ -1,12 +1,17 @@
 import { Response } from 'express';
 import responseCodeEnum from '../../interfaces/express/response.enum.interface';
+import ResponseResult from 'interfaces/express/responseResult.interface';
 
 class ExpressResponse {
   public static created(res: Response, msg: string): void {
     res.status(responseCodeEnum.created).json({ msg });
   }
 
-  public static success(res: Response, msg: string, data: object): void {
+  public static success(
+    res: Response,
+    msg: string,
+    data: ResponseResult,
+  ): void {
     res.status(responseCodeEnum.success).json({ msg, data });
   }
 

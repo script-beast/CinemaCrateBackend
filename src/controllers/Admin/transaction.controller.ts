@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-import transactionModel from 'models/transaction.model';
+import transactionModel from '../../models/transaction.model';
 
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
@@ -12,13 +12,24 @@ class Transaction {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      // I want to populate the userId, storeId, crateId, limitedCrateId fields in the transaction model
-      // and get something like this:
-      // { UserName : 'John Doe', itemName: 'Store 1', product:"store", gateway:"stripe", price: 100, status: "success", paymentId: "1234" }
-      // { UserName : 'John Doe', itemName: 'Crate 1', product:"crate", gateway:"phonepe", price: 200, status: "pending", paymentId: "1234" }
-      // use aggregate to get the above result
+      let options = {};
+
+      if (req.query.product) {
+        options = { ...options, userId: req.query.product };
+      }
+
+      if (req.query.status) {
+        options = { ...options, status: req.query.status };
+      }
+
+      if (req.query.gateway) {
+        options = { ...options, gateway: req.query.gateway };
+      }
 
       const result = await transactionModel.aggregate([
+        {
+          $match: options,
+        },
         {
           $lookup: {
             from: 'user',
@@ -96,7 +107,14 @@ class Transaction {
         },
       ]);
 
-      return ExpressResponse.success(res, 'Success', { result });
+      const totalPages = Math.ceil(
+        (await transactionModel.countDocuments(options)) / limit,
+      );
+
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
+      });
     },
   );
 
@@ -135,37 +153,14 @@ class Transaction {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
+      const totalPages = Math.ceil(
+        (await transactionModel.countDocuments({ userId })) / limit,
+      );
 
-  public getTransactionByProduct = catchAsync(
-    async (req: Request, res: Response) => {
-      const product: string = req.params.product;
-
-      const result = await transactionModel.find({ product });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getTransactionByStatus = catchAsync(
-    async (req: Request, res: Response) => {
-      const status: string = req.params.status;
-
-      const result = await transactionModel.find({ status });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getTransactionByGateway = catchAsync(
-    async (req: Request, res: Response) => {
-      const gateway: string = req.params.gateway;
-
-      const result = await transactionModel.find({ gateway });
-
-      return ExpressResponse.success(res, 'Success', { result });
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
+      });
     },
   );
 }

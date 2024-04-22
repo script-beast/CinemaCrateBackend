@@ -2,10 +2,12 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
 import storeModel from '../../models/store.model';
-import orderHistoryModel from 'models/orderHistory.model';
+import orderHistoryModel from '../../models/orderHistory.model';
 
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
+
+import { ReqStoreSchemaType } from '../../validations/Admin/store/reqStore.zod';
 
 class StoreController {
   public getAllStores = catchAsync(async (req: Request, res: Response) => {
@@ -17,7 +19,11 @@ class StoreController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { result });
+    const totalPages = Math.ceil(
+      (await storeModel.countDocuments({ isDeleted: false })) / limit,
+    );
+
+    return ExpressResponse.success(res, 'Success', { result, totalPages });
   });
 
   public getSingleStore = catchAsync(async (req: Request, res: Response) => {
@@ -44,7 +50,7 @@ class StoreController {
   });
 
   public createStore = catchAsync(async (req: Request, res: Response) => {
-    const { name, price, credits } = req.body;
+    const { name, price, credits } = req.body as ReqStoreSchemaType;
 
     const store = await storeModel.create({
       name,
@@ -57,7 +63,7 @@ class StoreController {
 
   public updateStore = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { name, price, credits } = req.body;
+    const { name, price, credits } = req.body as ReqStoreSchemaType;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return ExpressResponse.badRequest(res, 'Invalid ID');
@@ -86,6 +92,34 @@ class StoreController {
     await storeModel.findByIdAndUpdate(id, { isDeleted: true });
 
     return ExpressResponse.accepted(res, 'Store deleted successfully');
+  });
+
+  public getDeletedStores = catchAsync(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const result = await storeModel
+      .find({ isDeleted: true })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalPages = Math.ceil(
+      (await storeModel.countDocuments({ isDeleted: true })) / limit,
+    );
+
+    return ExpressResponse.success(res, 'Success', { result, totalPages });
+  });
+
+  public restoreStore = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return ExpressResponse.badRequest(res, 'Invalid ID');
+    }
+
+    await storeModel.findByIdAndUpdate(id, { isDeleted: false });
+
+    return ExpressResponse.accepted(res, 'Store restored successfully');
   });
 }
 

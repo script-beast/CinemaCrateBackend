@@ -10,11 +10,16 @@ import reqCrateSchema from '../crate/reqCrate.zod';
 const reqLimitedCrateSchema = reqCrateSchema
   .extend({
     endTime: z
-      .date({ required_error: 'EndTime is required' })
-      .refine((val) => val > new Date(), {
+      .string({ required_error: 'EndTime is required' })
+      .datetime({
+        message: 'Invalid date time format',
+      })
+      .refine((val) => new Date(val) > new Date(), {
         message: 'EndTime should be greater than current date time',
       }),
-    discountPrice: z.number({ required_error: 'discountPrice is required' }),
+    discountPrice: z
+      .number({ required_error: 'discountPrice is required' })
+      .min(1, { message: 'discountPrice should be greater than 0' }),
     occassion: z
       .string({ required_error: 'Occassion is required' })
       .max(255, { message: 'Occassion should be less than 255 chars' }),

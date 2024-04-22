@@ -17,6 +17,7 @@ const crateSchema = new mongoose.Schema<crateType>(
     },
     category: {
       type: String,
+      enum: ['movie', 'web-series', 'anime'],
       required: true,
     },
     plot: {

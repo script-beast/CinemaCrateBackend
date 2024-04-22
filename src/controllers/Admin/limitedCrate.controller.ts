@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-import limitedCrateModel from 'models/limitedCrate.model';
-import orderHistoryModel from 'models/orderHistory.model';
+import limitedCrateModel from '../../models/limitedCrate.model';
+import orderHistoryModel from '../../models/orderHistory.model';
 
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
@@ -29,12 +29,27 @@ class LimitedCrateController {
         options = { ...options, casts: { $in: [req.query.cast] } };
       }
 
+      if (req.query.occassion) {
+        options = { ...options, occassion: req.query.occassion };
+      }
+
       const result = await limitedCrateModel
         .find({ ...options, isDeleted: false, endTime: { $gte: new Date() } })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { result });
+      const totalPages = Math.ceil(
+        (await limitedCrateModel.countDocuments({
+          ...options,
+          isDeleted: false,
+          endTime: { $gte: new Date() },
+        })) / limit,
+      );
+
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
+      });
     },
   );
 
@@ -48,60 +63,17 @@ class LimitedCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
+      const totalPages = Math.ceil(
+        (await limitedCrateModel.countDocuments({
+          isDeleted: false,
+          endTime: { $lt: new Date() },
+        })) / limit,
+      );
 
-  public getLimitedCrateByCategory = catchAsync(
-    async (req: Request, res: Response) => {
-      const { category } = req.params;
-
-      const result = await limitedCrateModel.find({
-        category,
-        isDeleted: false,
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
       });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getLimitedCrateByOccassion = catchAsync(
-    async (req: Request, res: Response) => {
-      const { occassion } = req.params;
-
-      const result = await limitedCrateModel.find({
-        occassion,
-        isDeleted: false,
-      });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getLimitedCrateByGenre = catchAsync(
-    async (req: Request, res: Response) => {
-      const { genre } = req.params;
-
-      const result = await limitedCrateModel.find({
-        genre,
-        isDeleted: false,
-      });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getLimitedCrateByCast = catchAsync(
-    async (req: Request, res: Response) => {
-      const { cast } = req.params;
-
-      // cast is an array of strings
-      const result = await limitedCrateModel.find({
-        casts: { $in: [cast] },
-        isDeleted: false,
-      });
-
-      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -248,7 +220,14 @@ class LimitedCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { result });
+      const totalPages = Math.ceil(
+        (await limitedCrateModel.countDocuments({ isDeleted: true })) / limit,
+      );
+
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
+      });
     },
   );
 

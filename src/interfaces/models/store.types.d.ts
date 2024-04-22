@@ -5,6 +5,7 @@ type storeType = {
   name: string;
   price: number;
   credits: number;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
   __v: number;

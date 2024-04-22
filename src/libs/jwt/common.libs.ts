@@ -5,7 +5,7 @@ class jwtCommon {
   private static jwtSecret: string = process.env.JWT_SECRET!;
   private static jwtRefreshSecret: string = process.env.JWT_REFRESH_SECRET!;
   private static jwtExpiresIn: string = '1d';
-  private static jwtRefreshExpiresIn: string = '30d';
+  private static jwtRefreshExpiresIn: string = '1y';
 
   public static generateToken: (id: mongoose.Types.ObjectId) => string = (
     id: mongoose.Types.ObjectId,

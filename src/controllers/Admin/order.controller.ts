@@ -11,65 +11,66 @@ class OrderController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
+    let options = {};
+
+    if (req.query.product) {
+      options = { ...options, product: req.query.product };
+    }
+
+    if (req.query.gateway) {
+      options = { ...options, gateway: req.query.gateway };
+    }
+
+    if (req.query.method) {
+      options = { ...options, method: req.query.method };
+    }
+    // order is connected to userData and userData to user so we need to unwind it twice to get the user name and email
+
+    if (req.query.type) {
+      options = { ...options, type: req.query.type };
+    }
+
     const result = await orderHistoryModel.aggregate([
       {
+        $match: options,
+      },
+      {
         $lookup: {
-          from: 'user',
+          from: 'userdatas',
           localField: 'userId',
           foreignField: '_id',
           as: 'userData',
         },
       },
       {
-        $lookup: {
-          from: 'store',
-          localField: 'storeId',
-          foreignField: '_id',
-          as: 'store',
-        },
+        $unwind: '$userData',
       },
       {
         $lookup: {
-          from: 'crate',
-          localField: 'crateId',
+          from: 'users',
+          localField: 'userData.userId',
           foreignField: '_id',
-          as: 'crate',
+          as: 'user',
         },
       },
       {
-        $lookup: {
-          from: 'limitedCrate',
-          localField: 'limitedCrateId',
-          foreignField: '_id',
-          as: 'limitedCrate',
-        },
+        $unwind: '$user',
       },
       {
         $project: {
-          userName: '$userData.name',
-          userEmail: '$userData.email',
-          itemName: {
-            $cond: {
-              if: { $eq: ['$product', 'store'] },
-              then: '$store.name',
-              else: {
-                $cond: {
-                  if: { $eq: ['$product', 'crate'] },
-                  then: '$crate.name',
-                  else: '$limitedCrate.name',
-                },
-              },
-            },
-          },
+          _id: 1,
           product: 1,
           gateway: 1,
-          price: 1,
-          status: 1,
-          desc: 1,
           method: 1,
           type: 1,
-          _id: 1,
+          price: 1,
+          status: 1,
+          userName: '$user.name',
+          userEmail: '$user.email',
         },
+      },
+      {
+        $sort: { createdAt: -1 },
       },
       {
         $skip: (page - 1) * limit,
@@ -79,7 +80,11 @@ class OrderController {
       },
     ]);
 
-    ExpressResponse.success(res, 'Success', { result });
+    const totalPages = Math.ceil(
+      (await orderHistoryModel.countDocuments(options)) / limit,
+    );
+
+    ExpressResponse.success(res, 'Success', { result, totalPages });
   });
 
   public getOrderById = catchAsync(async (req: Request, res: Response) => {
@@ -101,65 +106,52 @@ class OrderController {
   });
 
   public getOrderByUser = catchAsync(async (req: Request, res: Response) => {
-    const { userId } = req.params;
+    const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return ExpressResponse.badRequest(res, 'Invalid user id');
     }
 
-    const result = await orderHistoryModel
-      .find({ userId })
-      .populate('userId storeId crateId limitedCrateId');
-
-    ExpressResponse.success(res, 'Success', { result });
-  });
-
-  public getOrderByProduct = catchAsync(async (req: Request, res: Response) => {
-    const { product } = req.params;
-
-    const result = await orderHistoryModel
-      .find({ product })
-      .populate('userId storeId crateId limitedCrateId');
-
-    ExpressResponse.success(res, 'Success', { result });
-  });
-
-  public getOrderByStatus = catchAsync(async (req: Request, res: Response) => {
-    const { status } = req.params;
-
-    const result = await orderHistoryModel
-      .find({ status })
-      .populate('userId storeId crateId limitedCrateId');
-
-    ExpressResponse.success(res, 'Success', { result });
-  });
-
-  public getOrderByGateway = catchAsync(async (req: Request, res: Response) => {
-    const { gateway } = req.params;
-
-    const result = await orderHistoryModel
-      .find({ gateway })
-      .populate('userId storeId crateId limitedCrateId');
-
-    ExpressResponse.success(res, 'Success', { result });
-  });
-
-  public getOrderByMethod = catchAsync(async (req: Request, res: Response) => {
-    const { method } = req.params;
-
-    const result = await orderHistoryModel
-      .find({ method })
-      .populate('userId storeId crateId limitedCrateId');
-
-    ExpressResponse.success(res, 'Success', { result });
-  });
-
-  public getOrderByType = catchAsync(async (req: Request, res: Response) => {
-    const { type } = req.params;
-
-    const result = await orderHistoryModel
-      .find({ type })
-      .populate('userId storeId crateId limitedCrateId');
+    const result = await orderHistoryModel.aggregate([
+      {
+        $lookup: {
+          from: 'userdatas',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userData',
+        },
+      },
+      {
+        $unwind: '$userData',
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userData.userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $match: { "user._id": new mongoose.Types.ObjectId(id) },
+      },
+      {
+        $project: {
+          _id: 1,
+          product: 1,
+          gateway: 1,
+          method: 1,
+          type: 1,
+          price: 1,
+          status: 1,
+          userName: '$user.name',
+          userEmail: '$user.email',
+        },
+      },
+    ]);
 
     ExpressResponse.success(res, 'Success', { result });
   });

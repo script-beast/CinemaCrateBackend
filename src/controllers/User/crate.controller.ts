@@ -19,7 +19,11 @@ class CrateController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    ExpressResponse.success(res, 'Success', { result });
+    const totalPages = Math.ceil(
+      (await crateModel.countDocuments({ isActive: true })) / limit,
+    );
+
+    ExpressResponse.success(res, 'Success', { result, totalPages });
   });
 
   public crateById = catchAsync(async (req: Request, res: Response) => {

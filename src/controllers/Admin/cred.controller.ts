@@ -48,8 +48,11 @@ class CredController {
     if (!isMatch) return ExpressResponse.badRequest(res, 'Invalid credentials');
 
     const token = jwtCommon.generateToken(admin._id);
+    const refreshToken = jwtCommon.generateRefreshToken(admin._id);
 
-    ExpressResponse.success(res, 'Login successful', { result: token });
+    const result = { token, refreshToken };
+
+    ExpressResponse.success(res, 'Login successful', { result });
   });
 }
 

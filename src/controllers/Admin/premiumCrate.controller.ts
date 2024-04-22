@@ -6,6 +6,8 @@ import premiumCrateModel from '../../models/premiumCrate.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import { ReqPremiumCrateSchemaType } from '../../validations/Admin/premiumCrate/reqPremiumCrate.zod';
+
 class PremiumCrateController {
   public getAllPremiumCrates = catchAsync(
     async (req: Request, res: Response) => {
@@ -31,47 +33,17 @@ class PremiumCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
+      const totalPages = Math.ceil(
+        (await premiumCrateModel.countDocuments({
+          ...options,
+          isDeleted: false,
+        })) / limit,
+      );
 
-  public getPremiumCratesByCategory = catchAsync(
-    async (req: Request, res: Response) => {
-      const { category } = req.params;
-
-      const result = await premiumCrateModel.find({
-        category,
-        isDeleted: false,
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
       });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getPremiumCratesByGenre = catchAsync(
-    async (req: Request, res: Response) => {
-      const { genre } = req.params;
-
-      const result = await premiumCrateModel.find({
-        genre,
-        isDeleted: false,
-      });
-
-      return ExpressResponse.success(res, 'Success', { result });
-    },
-  );
-
-  public getPremiumCratesByCast = catchAsync(
-    async (req: Request, res: Response) => {
-      const { cast } = req.params;
-
-      // cast is an array of strings
-      const result = await premiumCrateModel.find({
-        casts: { $in: [cast] },
-        isDeleted: false,
-      });
-
-      return ExpressResponse.success(res, 'Success', { result });
     },
   );
 
@@ -95,35 +67,9 @@ class PremiumCrateController {
 
   public createPremiumCrate = catchAsync(
     async (req: Request, res: Response) => {
-      const {
-        name,
-        price,
-        genre,
-        plot,
-        link,
-        casts,
-        trailer,
-        pageCount,
-        category,
-        monthlyPrice,
-        yearlyPrice,
-        discount,
-      } = req.body;
+      const parseDta = req.body as ReqPremiumCrateSchemaType;
 
-      const result = await premiumCrateModel.create({
-        name,
-        price,
-        genre,
-        plot,
-        link,
-        casts,
-        trailer,
-        pageCount,
-        category,
-        monthlyPrice,
-        yearlyPrice,
-        discount,
-      });
+      const result = await premiumCrateModel.create(parseDta);
 
       return ExpressResponse.success(res, 'Success', { result });
     },
@@ -133,13 +79,15 @@ class PremiumCrateController {
     async (req: Request, res: Response) => {
       const { id } = req.params;
 
+      const parseDta = req.body as ReqPremiumCrateSchemaType;
+
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return ExpressResponse.badRequest(res, 'Invalid ID');
       }
 
       const premiumCrate = await premiumCrateModel.findByIdAndUpdate(
         id,
-        req.body,
+        parseDta,
         { new: true },
       );
 
@@ -177,7 +125,14 @@ class PremiumCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      return ExpressResponse.success(res, 'Success', { result });
+      const totalPages = Math.ceil(
+        (await premiumCrateModel.countDocuments({ isDeleted: true })) / limit,
+      );
+
+      return ExpressResponse.success(res, 'Success', {
+        result,
+        totalPages,
+      });
     },
   );
 
