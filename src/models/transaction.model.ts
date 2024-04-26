@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
 import transactionType from '../interfaces/models/transaction.types';
+import {
+  paymentGateway,
+  product,
+  transactionStatus,
+} from '../interfaces/common/payment.enum';
 
 const transactionSchema = new mongoose.Schema<transactionType>(
   {
@@ -23,6 +28,7 @@ const transactionSchema = new mongoose.Schema<transactionType>(
     gateway: {
       type: String,
       required: true,
+      enum: paymentGateway,
     },
     price: {
       type: Number,
@@ -30,7 +36,8 @@ const transactionSchema = new mongoose.Schema<transactionType>(
     },
     status: {
       type: String,
-      required: true,
+      enum: transactionStatus,
+      default: 'Pending',
     },
     paymentId: {
       type: String,
@@ -39,7 +46,7 @@ const transactionSchema = new mongoose.Schema<transactionType>(
     product: {
       type: String,
       required: true,
-      enum: ['store', 'crate', 'limitedCrate'],
+      enum: product,
     },
   },
   {

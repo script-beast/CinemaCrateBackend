@@ -3,14 +3,14 @@ import mongoose from 'mongoose';
 type userDataType = {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  wallet: Number;
+  wallet: number;
   referralCode: string;
   referredBy: mongoose.Types.ObjectId;
   address: string;
   city: string;
   state: string;
   country: string;
-  zipNumber: Number;
+  zipNumber: number;
   company: string;
   crate: mongoose.Types.ObjectId[];
   limitedCrate: mongoose.Types.ObjectId[];
@@ -22,7 +22,7 @@ type userDataType = {
   cart: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
-  __v: Number;
+  __v: number;
 };
 
 export default userDataType;

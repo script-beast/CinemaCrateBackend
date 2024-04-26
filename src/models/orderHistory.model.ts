@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 import orderHistoryType from '../interfaces/models/orderHistory.types';
+import {
+  paymentGateway,
+  paymentMethod,
+  paymentType,
+  product,
+  transactionStatus,
+} from '../interfaces/common/payment.enum';
 
 const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
   {
@@ -23,7 +30,7 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     gateway: {
       type: String,
       required: true,
-      enum: ['Stripe', 'Razorpay', 'Gifted'],
+      enum: paymentGateway,
     },
     price: {
       type: Number,
@@ -31,8 +38,8 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     },
     status: {
       type: String,
-      enum: ['success', 'failed'],
-      required: true,
+      enum: transactionStatus,
+      default: transactionStatus.PENDING,
     },
     desc: {
       type: String,
@@ -41,17 +48,17 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     method: {
       type: String,
       required: true,
-      enum: ['wallet', 'card', 'gift'],
+      enum: paymentMethod,
     },
     type: {
       type: String,
       required: true,
-      enum: ['credit', 'debit', 'gift'],
+      enum: paymentType,
     },
     product: {
       type: String,
       required: true,
-      enum: ['store', 'crate', 'limitedCrate'],
+      enum: product,
     },
   },
   { timestamps: true },

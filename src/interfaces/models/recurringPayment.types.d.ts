@@ -6,12 +6,12 @@ type recurringPaymentType = {
   premiumCrateId: mongoose.Types.ObjectId;
   gateway: string;
   paymentId: string;
-  price: Number;
+  price: number;
   status: string;
   duration: string;
   createdAt: Date;
   updatedAt: Date;
-  __v: Number;
+  __v: number;
 };
 
 export default recurringPaymentType;
