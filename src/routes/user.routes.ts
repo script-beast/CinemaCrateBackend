@@ -17,8 +17,8 @@ router.use('/', credUserRoutes);
 router.use('/cart', userAuth, cartUserRoutes);
 router.use('/profile', userAuth, profileUserRoutes);
 router.use('/crates', crateUserRoutes);
-router.use('/limitedCrates', limitedCrateUserRoutes);
-router.use('/premiumCrates', premiumCrateUserRoutes);
+router.use('/limited-crates', limitedCrateUserRoutes);
+router.use('/premium-crates', premiumCrateUserRoutes);
 router.use('/stores', userAuth, storeUserRoutes);
 router.use('/contacts', contactUserRoutes);
 

@@ -28,7 +28,7 @@ export default class ExpressConnection {
   }
 
   private routes() {
-    this.app.get('/test', (req: Request, res: Response, next: NextFunction) => {
+    this.app.get('/', (req: Request, res: Response, next: NextFunction) => {
       res.json({ message: 'Hello World' });
     });
     this.app.use('/admin', adminRoutes);

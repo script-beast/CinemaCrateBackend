@@ -1,6 +1,7 @@
 import express from 'express';
 
 import credAdminRoutes from './Admin/cred.routes';
+import userAdminRoutes from './Admin/user.routes';
 import dashboardAdminRoutes from './Admin/dashboard.routes';
 import crateAdminRoutes from './Admin/crates.routes';
 import limitedCratesAdminRoutes from './Admin/limitedCrates.routes';
@@ -15,6 +16,7 @@ import adminAuth from '../middlewares/admin.auth';
 const router = express.Router();
 
 router.use('/', credAdminRoutes);
+router.use('/users', adminAuth, userAdminRoutes);
 router.use('/dashboard', adminAuth, dashboardAdminRoutes);
 router.use('/crates', adminAuth, crateAdminRoutes);
 router.use('/limited-crates', adminAuth, limitedCratesAdminRoutes);

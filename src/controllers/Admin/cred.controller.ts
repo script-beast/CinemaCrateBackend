@@ -6,7 +6,6 @@ import jwtCommon from '../../libs/jwt/common.libs';
 import bcryptCommon from '../../libs/bcrypt/common.libs';
 
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
-
 import ExpressResponse from '../../libs/express/response.libs';
 
 import { RegisterSchemaType } from '../../validations/Admin/cred/register.zod';
