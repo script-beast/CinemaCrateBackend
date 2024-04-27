@@ -8,6 +8,7 @@ import orderAdminRoutes from './Admin/orders.routes';
 import premiumCratesAdminRoutes from './Admin/premiumCrates.routes';
 import storeAdminRoutes from './Admin/stores.routes';
 import transactionAdminRoutes from './Admin/transactions.routes';
+import contactAdminRoutes from './Admin/contact.routes';
 
 import adminAuth from '../middlewares/admin.auth';
 
@@ -21,5 +22,6 @@ router.use('/orders', adminAuth, orderAdminRoutes);
 router.use('/premium-crates', adminAuth, premiumCratesAdminRoutes);
 router.use('/stores', adminAuth, storeAdminRoutes);
 router.use('/transactions', adminAuth, transactionAdminRoutes);
+router.use('/contacts', adminAuth, contactAdminRoutes);
 
 export default router;

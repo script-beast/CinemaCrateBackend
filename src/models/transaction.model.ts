@@ -37,7 +37,7 @@ const transactionSchema = new mongoose.Schema<transactionType>(
     status: {
       type: String,
       enum: transactionStatus,
-      default: 'Pending',
+      default: transactionStatus.PENDING,
     },
     paymentId: {
       type: String,

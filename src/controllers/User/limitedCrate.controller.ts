@@ -10,6 +10,13 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
+import {
+  paymentGateway,
+  paymentType,
+  product,
+  transactionStatus,
+} from '../../interfaces/common/payment.enum';
+
 class LimitedCrateController {
   public allActiveLimitedCrates = catchAsync(
     async (req: Request, res: Response) => {
@@ -95,8 +102,8 @@ class LimitedCrateController {
 
       const extistingOrder = await orderHistoryModel.findOne({
         userId,
-        crateId: limitedCrate._id,
-        method: 'Wallet',
+        limitedCrateId: limitedCrate._id,
+        gateway: paymentGateway.WALLET,
       });
 
       if (extistingOrder) {
@@ -119,12 +126,10 @@ class LimitedCrateController {
       const orderHistory = new orderHistoryModel({
         userId,
         limitedCrateId: limitedCrate._id,
-        gateway: 'Wallet',
-        desc: `Bought ${limitedCrate.name} with wallet`,
+        gateway: paymentGateway.WALLET,
         price: limitedCrate.discountPrice,
-        method: 'Wallet',
-        type: 'debit',
-        product: 'limitedCrate',
+        type: paymentType.DEBIT,
+        product: product.LIMITEDCRATE,
       });
 
       await orderHistory.save();
@@ -161,7 +166,7 @@ class LimitedCrateController {
       const extistingOrder = await orderHistoryModel.findOne({
         userId,
         limitedCrateId: limitedCrate._id,
-        method: 'Stripe',
+        gateway: paymentGateway.STRIPE,
       });
 
       if (extistingOrder) {
@@ -175,11 +180,9 @@ class LimitedCrateController {
         userId,
         limitedCrateId: limitedCrate._id,
         price: limitedCrate.discountPrice,
-        gateway: 'Stripe',
-        type: 'debit',
+        gateway: paymentGateway.STRIPE,
+        product: product.LIMITEDCRATE,
         paymentId: 'stripe_payment_id',
-        status: 'pending',
-        product: 'limitedCrate',
       });
 
       await transaction.save();

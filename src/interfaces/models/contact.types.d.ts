@@ -7,6 +7,7 @@ type contactType = {
   email: string;
   mobile: string;
   message: string;
+  isReplied: boolean;
   createdAt: Date;
   updatedAt: Date;
   __v: number;

@@ -11,6 +11,12 @@ import ExpressResponse from '../../libs/express/response.libs';
 import { ReqCrateSchemaType } from '../../validations/Admin/crate/reqCrate.zod';
 import { GiftCrateSchemaType } from '../../validations/Admin/crate/giftCrate.zod';
 
+import {
+  paymentGateway,
+  product,
+  transactionStatus,
+} from '../../interfaces/common/payment.enum';
+
 class CrateController {
   public getAllCrates = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
@@ -207,13 +213,10 @@ class CrateController {
     const giftedCrate = await orderHistoryModel.create({
       userId: user._id,
       crateId: crate._id,
-      gateway: 'Gifted',
+      gateway: paymentGateway.GIFTED,
       price: crate.price,
-      status: 'success',
-      desc: `Gifted ${crate.name}`,
-      method: 'gift',
-      type: 'gift',
-      product: 'crate',
+      type: product.CRATE,
+      product: product.CRATE,
     });
 
     user.crate.push(crate._id);

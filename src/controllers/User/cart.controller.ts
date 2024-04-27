@@ -128,64 +128,6 @@ class CartController {
 
     ExpressResponse.accepted(res, 'Cart cleared');
   });
-
-  public checkoutCart = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return ExpressResponse.badRequest(res, 'Invalid User ID');
-    }
-
-    const user = await userDataModel.findOne({ userId });
-
-    if (!user) {
-      return ExpressResponse.notFound(res, 'User not found');
-    }
-
-    if (user.cart.length === 0) {
-      return ExpressResponse.badRequest(res, 'Cart is empty');
-    }
-
-    const userCart = user.cart;
-
-    // Add cart to user's orders
-
-    userCart.forEach(async (item) => {
-      const crate = await crateModel
-        .findById(item)
-        .select('name price description');
-
-      if (!crate) {
-        return ExpressResponse.notFound(res, 'Crate not found');
-      }
-
-      const order = {
-        userId,
-        crateId: item,
-        name: crate.name,
-        price: crate.price,
-        description: `${crate.name} buied `,
-        method: 'Cart',
-        status: 'Pending',
-        type: 'Debit',
-        gateway: 'Store',
-      };
-
-      const orderHistory = new orderHistoryModel(order);
-
-      orderHistory.save();
-
-      user.orderHistory.push(orderHistory._id);
-
-      await user.save();
-    });
-
-    user.cart = [];
-
-    await user.save();
-
-    ExpressResponse.accepted(res, 'Cart checked out');
-  });
 }
 
 export default new CartController();

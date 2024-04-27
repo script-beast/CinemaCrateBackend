@@ -8,7 +8,6 @@ type orderCommonType = {
   limitedCrateId?: mongoose.Types.ObjectId;
   gateway: string;
   price: number;
-  status: string;
   product: string;
   createdAt: Date;
   updatedAt: Date;

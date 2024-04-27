@@ -67,3 +67,5 @@ class premiumCrateController {
     ExpressResponse.success(res, 'Success', { result });
   });
 }
+
+export default new premiumCrateController();

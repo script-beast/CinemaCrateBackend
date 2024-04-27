@@ -11,7 +11,6 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 import {
-  paymentMethod,
   paymentGateway,
   paymentType,
   product,
@@ -92,7 +91,7 @@ class CrateController {
     const extistingOrder = await orderHistoryModel.findOne({
       userId,
       crateId,
-      method: paymentMethod.WALLET,
+      gateway: paymentGateway.WALLET,
     });
 
     if (extistingOrder) {
@@ -112,18 +111,16 @@ class CrateController {
       user.crate.push(crateId);
     }
 
-    const orderHistory = new orderHistoryModel({
+    const orderHistory = await orderHistoryModel.create({
       userId,
       crateId,
       gateway: paymentGateway.WALLET,
-      desc: `Bought ${crate.name} with wallet`,
       price: crate.price,
-      method: paymentMethod.WALLET,
       type: paymentType.DEBIT,
       product: product.CRATE,
     });
 
-    orderHistory.save();
+    await orderHistory.save();
 
     user.orderHistory.push(orderHistory._id);
 
@@ -132,7 +129,7 @@ class CrateController {
     ExpressResponse.accepted(res, 'Crate bought successfully');
   });
 
-  public createCratePaymentIntentStripe = catchAsync(
+  public createCrateStripePaymentIntent = catchAsync(
     async (req: Request, res: Response) => {
       const { id } = req.params;
       const userId = req.userId;
@@ -158,7 +155,7 @@ class CrateController {
       const extistingOrder = await orderHistoryModel.findOne({
         userId,
         crateId,
-        method: 'Stripe',
+        gateway: paymentGateway.STRIPE,
       });
 
       if (extistingOrder) {
@@ -173,13 +170,13 @@ class CrateController {
       const transaction = new transactionModel({
         userId,
         crateId,
-        gateway: 'stripe',
+        gateway: paymentGateway.STRIPE,
         price: crate.price,
         paymentId: 'stripe_payment_id',
-        product: 'crate',
+        product: product.CRATE,
       });
 
-      transaction.save();
+      await transaction.save();
 
       user.transaction.push(transaction._id);
 

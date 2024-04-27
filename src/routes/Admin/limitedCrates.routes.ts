@@ -8,14 +8,22 @@ import reqLimitedCrateSchema from '../../validations/Admin/limitedCrate/reqLimit
 const router = express.Router();
 
 router.get('/', limitedCrateController.getAllLimitedCrates);
-router.post('/',validate(reqLimitedCrateSchema),  limitedCrateController.createLimitedCrate);
+router.post(
+  '/',
+  validate(reqLimitedCrateSchema),
+  limitedCrateController.createLimitedCrate,
+);
 router.get('/deleted', limitedCrateController.getDeletedLimitedCrates);
 router.get('/past', limitedCrateController.getPastLimitedCrates);
 
 router.patch('/restore/:id', limitedCrateController.restoreLimitedCrate);
 
 router.get('/:id', limitedCrateController.getSingleLimitedCrate);
-router.put('/:id',validate(reqLimitedCrateSchema),limitedCrateController.updateLimitedCrate);
+router.put(
+  '/:id',
+  validate(reqLimitedCrateSchema),
+  limitedCrateController.updateLimitedCrate,
+);
 router.delete('/:id', limitedCrateController.deleteLimitedCrate);
 
 export default router;

@@ -2,10 +2,8 @@ import mongoose from 'mongoose';
 import orderHistoryType from '../interfaces/models/orderHistory.types';
 import {
   paymentGateway,
-  paymentMethod,
   paymentType,
   product,
-  transactionStatus,
 } from '../interfaces/common/payment.enum';
 
 const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
@@ -35,20 +33,6 @@ const orderHistorySchema = new mongoose.Schema<orderHistoryType>(
     price: {
       type: Number,
       required: true,
-    },
-    status: {
-      type: String,
-      enum: transactionStatus,
-      default: transactionStatus.PENDING,
-    },
-    desc: {
-      type: String,
-      required: true,
-    },
-    method: {
-      type: String,
-      required: true,
-      enum: paymentMethod,
     },
     type: {
       type: String,

@@ -18,11 +18,11 @@ export enum transactionStatus {
   PENDING = 'Pending',
 }
 
-export enum paymentMethod {
-  WALLET = 'Wallet',
-  CARD = 'Card',
-  GIFT = 'Gift',
-}
+// export enum paymentMethod {
+//   WALLET = 'Wallet',
+//   CARD = 'Card',
+//   GIFT = 'Gift',
+// }
 
 export enum paymentType {
   CREDIT = 'Credit',

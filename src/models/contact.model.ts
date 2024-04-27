@@ -23,6 +23,10 @@ const contactSchema = new mongoose.Schema<contactType>(
       type: String,
       required: true,
     },
+    isReplied: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

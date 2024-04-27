@@ -10,6 +10,13 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
+import {
+  paymentGateway,
+  paymentType,
+  product,
+  transactionStatus,
+} from '../../interfaces/common/payment.enum';
+
 class StoreController {
   public allActiveStores = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
@@ -67,10 +74,10 @@ class StoreController {
       const transaction = await transactionModel.create({
         userId,
         storeId: store._id,
-        gateway: 'stripe',
+        gateway: paymentGateway.STRIPE,
         price: store.price,
+        product: product.STORE,
         paymentId: 'stripe_payment_id',
-        product: 'store',
       });
 
       transaction.save();
@@ -89,5 +96,6 @@ class StoreController {
   );
 
   // public validateStorePayment = catchAsync(
-    
 }
+
+export default new StoreController();
