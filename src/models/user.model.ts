@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import userType from '../interfaces/models/user.types';
 
+import { userStatus } from '../interfaces/common/user.enum';
+
 const userSchema = new mongoose.Schema<userType>(
   {
     userDataId: {
@@ -36,8 +38,8 @@ const userSchema = new mongoose.Schema<userType>(
     },
     status: {
       type: String,
-      enum: ['active', 'suspended', 'deleted'],
-      default: 'active',
+      enum: userStatus,
+      default: userStatus.ACTIVE,
     },
     remark: {
       type: String,

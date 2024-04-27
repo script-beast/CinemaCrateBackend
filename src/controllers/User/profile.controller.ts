@@ -8,14 +8,17 @@ import recurringPaymentModel from '../../models/recurringPayment.model';
 import bcryptCommon from '../../libs/bcrypt/common.libs';
 
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
-
 import ExpressResponse from '../../libs/express/response.libs';
+
+import { UpdateProfileSchemaType } from '../../validations/User/profile/updateProfile.zod';
+import { UpdateAddressSchemaType } from '../../validations/User/profile/updateAdress.zod';
 
 class ProfileController {
   public updateProfile = catchAsync(async (req: Request, res: Response) => {
     const id = req.userId;
 
-    const { name, mobile, currentPassword, newPassword } = req.body;
+    const { name, mobile, currentPassword, newPassword } =
+      req.body as UpdateProfileSchemaType;
 
     const user = await userModel.findById(id);
 
@@ -43,7 +46,8 @@ class ProfileController {
   public updateAddress = catchAsync(async (req: Request, res: Response) => {
     const id = req.userId;
 
-    const { address, city, state, zip, country, company } = req.body;
+    const { address, city, state, zip, country, company } =
+      req.body as UpdateAddressSchemaType;
 
     const userData = await userDataModel.findOne({ userId: id });
 

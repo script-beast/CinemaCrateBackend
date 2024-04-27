@@ -16,9 +16,9 @@ const router = express.Router();
 router.use('/', credUserRoutes);
 router.use('/cart', userAuth, cartUserRoutes);
 router.use('/profile', userAuth, profileUserRoutes);
-router.use('/crates', crateUserRoutes);
-router.use('/limited-crates', limitedCrateUserRoutes);
-router.use('/premium-crates', premiumCrateUserRoutes);
+router.use('/crates/standard', crateUserRoutes);
+router.use('/crates/limited', limitedCrateUserRoutes);
+router.use('/crates/premium', premiumCrateUserRoutes);
 router.use('/stores', userAuth, storeUserRoutes);
 router.use('/contacts', contactUserRoutes);
 

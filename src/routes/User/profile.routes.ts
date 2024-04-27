@@ -2,11 +2,20 @@ import express from 'express';
 
 import profileController from '../../controllers/User/profile.controller';
 
+import validate from '../../middlewares/validation.zod';
+
+import UpdateProfileSchema from '../../validations/User/profile/updateProfile.zod';
+import UpdateAddressSchema from '../../validations/User/profile/updateAdress.zod';
+
 const router = express.Router();
 
 router.get('/', profileController.getProfile);
-router.put('/', profileController.updateProfile);
-router.put('/address', profileController.updateAddress);
+router.put('/', validate(UpdateProfileSchema), profileController.updateProfile);
+router.put(
+  '/address',
+  validate(UpdateAddressSchema),
+  profileController.updateAddress,
+);
 router.get('/short', profileController.getProfileShort);
 router.get('/crates', profileController.getMyCrates);
 router.get('/orders', profileController.getMyOrders);

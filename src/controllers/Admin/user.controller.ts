@@ -7,6 +7,9 @@ import userDataModel from '../../models/userData.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import { UpdateStatusSchemaType } from '../../validations/Admin/user/updateStatus.zod';
+import { UpdateWalletSchemaType } from '../../validations/Admin/user/updateWallet.zod';
+
 class UserController {
   public getAllUsers = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
@@ -59,9 +62,9 @@ class UserController {
     return ExpressResponse.success(res, 'Success', { result });
   });
 
-  public updateUserWallet = catchAsync(async (req: Request, res: Response) => {
+  public updateWallet = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { wallet } = req.body;
+    const { wallet } = req.body as UpdateWalletSchemaType;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return ExpressResponse.badRequest(res, 'Invalid ID');
@@ -82,9 +85,9 @@ class UserController {
     return ExpressResponse.accepted(res, 'Wallet updated successfully');
   });
 
-  public updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+  public updateStatus = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { status, remark } = req.body;
+    const { status, remark } = req.body as UpdateStatusSchemaType;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return ExpressResponse.badRequest(res, 'Invalid ID');
