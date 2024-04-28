@@ -28,4 +28,4 @@ yarn-error.log*
 
 yt.txt
 
-*.tsx
+# *.tsx

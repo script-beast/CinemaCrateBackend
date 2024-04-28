@@ -7,8 +7,9 @@ import userDataModel from '../../models/userData.model';
 import jwtCommon from '../../libs/jwt/common.libs';
 import bcryptCommon from '../../libs/bcrypt/common.libs';
 
-import catchAsync from '../../utils/errorHandling/catchAsync.utils';
+import nodeMailerUtils from '../../utils/mailService/services/nodeMailer.utils';
 
+import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
 import { RegisterSchemaType } from '../../validations/User/cred/register.zod';
@@ -114,12 +115,12 @@ class CredController {
 
       const otp = Math.floor(100000 + Math.random() * 900000);
 
-      user.verificationCode = 909090;
+      user.verificationCode = otp;
       user.verificationCodeExpires = new Date(Date.now() + 600000);
 
       await user.save();
 
-      // Send OTP to user email
+      nodeMailerUtils.sendOTP(email, user.name, otp);
 
       ExpressResponse.created(res, 'OTP sent successfully');
     },

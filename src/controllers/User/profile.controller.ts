@@ -163,14 +163,77 @@ class ProfileController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const result = await orderHistoryModel
-      .find({ userId: id })
-      .populate('crateId')
-      .populate('limitedCrateId')
-      .populate('storeId')
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    // {crateName, date , type , price , price, method}
+
+    const result = await orderHistoryModel.aggregate([
+      {
+        $match: {
+          userId: id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'crates',
+          localField: 'crateId',
+          foreignField: '_id',
+          as: 'crate',
+        },
+      },
+      {
+        $lookup: {
+          from: 'limitedcrates',
+          localField: 'limitedCrateId',
+          foreignField: '_id',
+          as: 'limitedCrate',
+        },
+      },
+      {
+        $unwind: {
+          path: '$crate',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: '$limitedCrate',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          crateName: {
+            $cond: {
+              if: '$crate',
+              then: '$crate.name',
+              else: '$limitedCrate.name',
+            },
+          },
+          createdAt: 1,
+          price: {
+            $cond: {
+              if: '$crate',
+              then: '$crate.price',
+              else: '$limitedCrate.price',
+            },
+          },
+          gateway: 1,
+          product: 1,
+          type: 1,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
 
     const totalPages = Math.ceil(
       (await orderHistoryModel.countDocuments({ userId: id })) / limit,
