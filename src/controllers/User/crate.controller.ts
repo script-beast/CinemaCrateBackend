@@ -41,12 +41,12 @@ class CrateController {
       key[5] = String(req.query.cast);
     }
 
-    // const cache = await redisConnection.get(key.join(':'));
+    const cache = await redisConnection.get(key.join(':'));
 
-    // if (cache) {
-    //   const { result, totalPages } = JSON.parse(cache);
-    //   return ExpressResponse.success(res, 'Success', { result, totalPages });
-    // }
+    if (cache) {
+      const { result, totalPages } = JSON.parse(cache);
+      return ExpressResponse.success(res, 'Success', { result, totalPages });
+    }
 
     const totalPages = Math.ceil(
       (await crateModel.countDocuments({ ...options, isDeleted: false })) /
@@ -58,11 +58,11 @@ class CrateController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    // redisConnection.setex(
-    //   key.join(':'),
-    //   3600,
-    //   JSON.stringify({ result, totalPages }),
-    // );
+    redisConnection.setex(
+      key.join(':'),
+      3600,
+      JSON.stringify({ result, totalPages }),
+    );
 
     console.log('Cache miss')
 
