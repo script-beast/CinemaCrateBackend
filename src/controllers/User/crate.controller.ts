@@ -10,6 +10,8 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
+import redisConnection from '../../connections/redis.connection';
+
 import {
   paymentGateway,
   paymentType,
@@ -22,18 +24,29 @@ class CrateController {
     const limit = parseInt(req.query.limit as string) || 10;
 
     let options = {};
+    let key = ['allActiveCrates', String(page), String(limit), '', '', ''];
 
     if (req.query.category) {
       options = { ...options, category: req.query.category };
+      key[3] = String(req.query.category);
     }
 
     if (req.query.genre) {
       options = { ...options, genre: req.query.genre };
+      key[4] = String(req.query.genre);
     }
 
     if (req.query.cast) {
       options = { ...options, casts: { $in: [req.query.cast] } };
+      key[5] = String(req.query.cast);
     }
+
+    // const cache = await redisConnection.get(key.join(':'));
+
+    // if (cache) {
+    //   const { result, totalPages } = JSON.parse(cache);
+    //   return ExpressResponse.success(res, 'Success', { result, totalPages });
+    // }
 
     const totalPages = Math.ceil(
       (await crateModel.countDocuments({ ...options, isDeleted: false })) /
@@ -44,6 +57,14 @@ class CrateController {
       .find({ ...options, isDeleted: false })
       .skip((page - 1) * limit)
       .limit(limit);
+
+    // redisConnection.setex(
+    //   key.join(':'),
+    //   3600,
+    //   JSON.stringify({ result, totalPages }),
+    // );
+
+    console.log('Cache miss')
 
     return ExpressResponse.success(res, 'Success', { result, totalPages });
   });

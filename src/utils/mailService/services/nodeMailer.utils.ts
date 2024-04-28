@@ -18,7 +18,10 @@ class NodeMailerService {
 
   public sendOTP = async (to: string, name: string, otp: number) => {
     const mailOptions = {
-      from: { name: 'CinemaCrate', address: process.env.MAIL_EMAIL || '' },
+      from: {
+        name: String(process.env.MAIL_USER),
+        address: String(process.env.MAIL_EMAIL),
+      },
       to,
       subject: 'CinemaCrate - Verify Your Account',
       html: render(SendOTPTemplate({ name, otp })),

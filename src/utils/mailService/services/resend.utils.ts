@@ -9,7 +9,7 @@ class ResendService {
   public sendOTP = async (to: string, name: string, otp: number) => {
     try {
       const mailOptions = {
-        from: process.env.MAIL_EMAIL || '',
+        from: String(process.env.MAIL_EMAIL),
         to,
         subject: 'CinemaCrate - Verify Your Account',
         html: render(SendOTPTemplate({ name, otp })),
