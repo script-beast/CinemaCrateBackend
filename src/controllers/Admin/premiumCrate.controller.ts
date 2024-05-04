@@ -6,6 +6,8 @@ import premiumCrateModel from '../../models/premiumCrate.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import redisConnection from '../../connections/redis.connection';
+
 import { ReqPremiumCrateSchemaType } from '../../validations/Admin/premiumCrate/reqPremiumCrate.zod';
 
 class PremiumCrateController {
@@ -71,6 +73,8 @@ class PremiumCrateController {
 
       const result = await premiumCrateModel.create(parseDta);
 
+      redisConnection.del('premiumCrate:*');
+
       return ExpressResponse.success(res, 'Success', { result });
     },
   );
@@ -91,6 +95,12 @@ class PremiumCrateController {
         { new: true },
       );
 
+      if (!premiumCrate) {
+        return ExpressResponse.notFound(res, 'Premium Crate not found');
+      }
+
+      redisConnection.del('premiumCrate:*');
+
       return ExpressResponse.accepted(
         res,
         'Premium Crate updated successfully',
@@ -107,6 +117,8 @@ class PremiumCrateController {
       }
 
       await premiumCrateModel.findByIdAndUpdate(id, { isDeleted: true });
+
+      redisConnection.del('premiumCrate:*');
 
       return ExpressResponse.accepted(
         res,
@@ -145,6 +157,8 @@ class PremiumCrateController {
       }
 
       await premiumCrateModel.findByIdAndUpdate(id, { isDeleted: false });
+
+      redisConnection.del('premiumCrate:*');
 
       return ExpressResponse.accepted(
         res,

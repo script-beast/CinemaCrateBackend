@@ -8,6 +8,8 @@ import orderHistoryModel from '../../models/orderHistory.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import redisConnection from '../../connections/redis.connection';
+
 import { ReqCrateSchemaType } from '../../validations/Admin/crate/reqCrate.zod';
 import { GiftCrateSchemaType } from '../../validations/Admin/crate/giftCrate.zod';
 
@@ -75,19 +77,11 @@ class CrateController {
   });
 
   public createCrate = catchAsync(async (req: Request, res: Response) => {
-    const { name, price, genre, plot, link, casts, trailer, category } =
-      req.body as ReqCrateSchemaType;
+    const parseDta = req.body as ReqCrateSchemaType;
 
-    await crateModel.create({
-      name,
-      price,
-      genre,
-      plot,
-      link,
-      casts,
-      trailer,
-      category,
-    });
+    await crateModel.create(parseDta);
+
+    redisConnection.flushall();
 
     return ExpressResponse.created(res, 'Crate created successfully');
   });
@@ -99,29 +93,17 @@ class CrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
-    const { name, price, genre, plot, link, casts, trailer, category } =
-      req.body as ReqCrateSchemaType;
+    const parseDta = req.body as ReqCrateSchemaType;
 
-    const updatedCrate = await crateModel.findByIdAndUpdate(
-      id,
-      {
-        name,
-        price,
-        genre,
-        plot,
-        link,
-        casts,
-        trailer,
-        category,
-      },
-      {
-        new: true,
-      },
-    );
+    const updatedCrate = await crateModel.findByIdAndUpdate(id, parseDta, {
+      new: true,
+    });
 
     if (!updatedCrate) {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
+
+    redisConnection.flushall();
 
     return ExpressResponse.accepted(res, 'Crate updated successfully');
   });
@@ -142,6 +124,8 @@ class CrateController {
     if (!deletedCrate) {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
+
+    redisConnection.flushall();
 
     return ExpressResponse.accepted(res, 'Crate deleted successfully');
   });
@@ -181,6 +165,8 @@ class CrateController {
     if (!restoredCrate) {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
+
+    redisConnection.flushall();
 
     return ExpressResponse.accepted(res, 'Crate restored successfully');
   });

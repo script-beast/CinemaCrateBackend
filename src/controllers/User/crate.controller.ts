@@ -24,7 +24,7 @@ class CrateController {
     const limit = parseInt(req.query.limit as string) || 10;
 
     let options = {};
-    let key = ['allActiveCrates', String(page), String(limit), '', '', ''];
+    let key = ['crates', String(page), String(limit), '', '', ''];
 
     if (req.query.category) {
       options = { ...options, category: req.query.category };
@@ -60,11 +60,12 @@ class CrateController {
 
     redisConnection.setex(
       key.join(':'),
-      3600,
+      // 3600, // for 1 hour
+      900, // for 15 minutes
       JSON.stringify({ result, totalPages }),
     );
 
-    console.log('Cache miss')
+    console.log('Cache miss');
 
     return ExpressResponse.success(res, 'Success', { result, totalPages });
   });
@@ -76,11 +77,20 @@ class CrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
+    const cache = await redisConnection.get(`crates:${id}`);
+
+    if (cache) {
+      const result = JSON.parse(cache);
+      return ExpressResponse.success(res, 'Success', { result });
+    }
+
     const result = await crateModel.findById(id).select('-isDeleted -links');
 
     if (!result) {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
+
+    redisConnection.setex(`crates:${id}`, 900, JSON.stringify(result));
 
     ExpressResponse.success(res, 'Success', { result });
   });

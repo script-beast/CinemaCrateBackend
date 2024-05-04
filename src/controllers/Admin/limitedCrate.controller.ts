@@ -7,6 +7,8 @@ import orderHistoryModel from '../../models/orderHistory.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
+import redisConnection from '../../connections/redis.connection';
+
 import { ReqLimitedCrateSchemaType } from '../../validations/Admin/limitedCrate/reqLimitedCrate.zod';
 
 class LimitedCrateController {
@@ -106,35 +108,11 @@ class LimitedCrateController {
 
   public createLimitedCrate = catchAsync(
     async (req: Request, res: Response) => {
-      const {
-        name,
-        price,
-        genre,
-        plot,
-        link,
-        casts,
-        trailer,
-        category,
-        endTime,
-        discountPrice,
-        occassion,
-        tagLine,
-      } = req.body as ReqLimitedCrateSchemaType;
+      const parseDta = req.body as ReqLimitedCrateSchemaType;
 
-      const newLimitedCrate = await limitedCrateModel.create({
-        name,
-        price,
-        genre,
-        plot,
-        link,
-        casts,
-        trailer,
-        category,
-        endTime,
-        discountPrice,
-        occassion,
-        tagLine,
-      });
+      await limitedCrateModel.create(parseDta);
+
+      redisConnection.del('limitedCrate:*');
 
       return ExpressResponse.created(res, 'Limited Crate created successfully');
     },
@@ -148,39 +126,23 @@ class LimitedCrateController {
         return ExpressResponse.badRequest(res, 'Invalid ID');
       }
 
-      const {
-        name,
-        price,
-        genre,
-        plot,
-        link,
-        casts,
-        trailer,
-        category,
-        endTime,
-        discountPrice,
-        occassion,
-        tagLine,
-      } = req.body as ReqLimitedCrateSchemaType;
+      const parseDta = req.body as ReqLimitedCrateSchemaType;
 
       const updatedLimitedCrate = await limitedCrateModel.findByIdAndUpdate(
         id,
-        {
-          name,
-          price,
-          genre,
-          plot,
-          link,
-          casts,
-          trailer,
-          category,
-          endTime,
-          discountPrice,
-          occassion,
-          tagLine,
-        },
+        parseDta,
         { new: true },
       );
+
+      if (!updatedLimitedCrate) {
+        return ExpressResponse.badRequest(res, 'Limited Crate not found');
+      }
+
+      redisConnection.del('limitedCrate:*');
+
+      const count = await redisConnection.keys(`limitedCrate:*`);
+      console.log(count)
+
 
       return ExpressResponse.accepted(
         res,
@@ -197,11 +159,17 @@ class LimitedCrateController {
         return ExpressResponse.badRequest(res, 'Invalid ID');
       }
 
-      await limitedCrateModel.findByIdAndUpdate(
+      const deletedLimitedCrate = await limitedCrateModel.findByIdAndUpdate(
         id,
         { isDeleted: true },
         { new: true },
       );
+
+      if (!deletedLimitedCrate) {
+        return ExpressResponse.badRequest(res, 'Limited Crate not found');
+      }
+
+      redisConnection.del('limitedCrate:*');
 
       return ExpressResponse.accepted(
         res,
@@ -239,11 +207,17 @@ class LimitedCrateController {
         return ExpressResponse.badRequest(res, 'Invalid ID');
       }
 
-      await limitedCrateModel.findByIdAndUpdate(
+      const restoredLimitedCrate = await limitedCrateModel.findByIdAndUpdate(
         id,
         { isDeleted: false },
         { new: true },
       );
+
+      if (!restoredLimitedCrate) {
+        return ExpressResponse.badRequest(res, 'Limited Crate not found');
+      }
+
+      redisConnection.del('limitedCrate:*');
 
       return ExpressResponse.accepted(
         res,

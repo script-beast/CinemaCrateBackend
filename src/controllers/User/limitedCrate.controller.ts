@@ -10,6 +10,8 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
+import redisConnection from '../../connections/redis.connection';
+
 import {
   paymentGateway,
   paymentType,
@@ -24,21 +26,33 @@ class LimitedCrateController {
       const limit = parseInt(req.query.limit as string) || 10;
 
       let options = {};
+      let key = ['limitedCrate', String(page), String(limit), '', '', '', ''];
 
       if (req.query.category) {
         options = { ...options, category: req.query.category };
+        key[3] = String(req.query.category);
       }
 
       if (req.query.genre) {
         options = { ...options, genre: req.query.genre };
+        key[4] = String(req.query.genre);
       }
 
       if (req.query.cast) {
         options = { ...options, casts: { $in: [req.query.cast] } };
+        key[5] = String(req.query.cast);
       }
 
       if (req.query.occassion) {
         options = { ...options, occassion: req.query.occassion };
+        key[6] = String(req.query.occassion);
+      }
+
+      const cache = await redisConnection.get(key.join(':'));
+
+      if (cache) {
+        const { result, totalPages } = JSON.parse(cache);
+        return ExpressResponse.success(res, 'Success', { result, totalPages });
       }
 
       const result = await limitedCrateModel
@@ -52,6 +66,12 @@ class LimitedCrateController {
           isDeleted: false,
           endTime: { $gte: new Date() },
         })) / limit,
+      );
+
+      redisConnection.setex(
+        key.join(':'),
+        900,
+        JSON.stringify({ result, totalPages }),
       );
 
       return ExpressResponse.success(res, 'Success', {
@@ -68,6 +88,13 @@ class LimitedCrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
+    const cache = await redisConnection.get(`limitedCrate:${id}`);
+
+    if (cache) {
+      const result = JSON.parse(cache);
+      return ExpressResponse.success(res, 'Success', { result });
+    }
+
     const result = await limitedCrateModel
       .findById(id)
       .select('-isDeleted -links');
@@ -75,6 +102,8 @@ class LimitedCrateController {
     if (!result) {
       return ExpressResponse.notFound(res, 'Limited Crate not found');
     }
+
+    redisConnection.setex(`limitedCrate:${id}`, 900, JSON.stringify(result));
 
     ExpressResponse.success(res, 'Success', { result });
   });
