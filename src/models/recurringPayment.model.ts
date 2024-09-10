@@ -26,12 +26,13 @@ const recurringPaymentSchema = new mongoose.Schema<recurringPaymentType>(
       required: true,
     },
     status: {
-      type: String,
-      required: true,
+      type: Boolean,
+      default: false,
     },
     duration: {
       type: String,
       required: true,
+      enum: ['monthly', 'yearly'],
     },
   },
   { timestamps: true },

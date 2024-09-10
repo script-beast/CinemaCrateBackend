@@ -7,8 +7,6 @@ import orderHistoryModel from '../../models/orderHistory.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
-import redisConnection from '../../connections/redis.connection';
-
 import { ReqLimitedCrateSchemaType } from '../../validations/Admin/limitedCrate/reqLimitedCrate.zod';
 
 class LimitedCrateController {
@@ -112,8 +110,6 @@ class LimitedCrateController {
 
       await limitedCrateModel.create(parseDta);
 
-      redisConnection.del('limitedCrate:*');
-
       return ExpressResponse.created(res, 'Limited Crate created successfully');
     },
   );
@@ -137,12 +133,6 @@ class LimitedCrateController {
       if (!updatedLimitedCrate) {
         return ExpressResponse.badRequest(res, 'Limited Crate not found');
       }
-
-      redisConnection.del('limitedCrate:*');
-
-      const count = await redisConnection.keys(`limitedCrate:*`);
-      console.log(count)
-
 
       return ExpressResponse.accepted(
         res,
@@ -168,8 +158,6 @@ class LimitedCrateController {
       if (!deletedLimitedCrate) {
         return ExpressResponse.badRequest(res, 'Limited Crate not found');
       }
-
-      redisConnection.del('limitedCrate:*');
 
       return ExpressResponse.accepted(
         res,
@@ -216,8 +204,6 @@ class LimitedCrateController {
       if (!restoredLimitedCrate) {
         return ExpressResponse.badRequest(res, 'Limited Crate not found');
       }
-
-      redisConnection.del('limitedCrate:*');
 
       return ExpressResponse.accepted(
         res,

@@ -10,8 +10,6 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
-import redisConnection from '../../connections/redis.connection';
-
 import {
   paymentGateway,
   paymentType,
@@ -48,13 +46,6 @@ class LimitedCrateController {
         key[6] = String(req.query.occassion);
       }
 
-      const cache = await redisConnection.get(key.join(':'));
-
-      if (cache) {
-        const { result, totalPages } = JSON.parse(cache);
-        return ExpressResponse.success(res, 'Success', { result, totalPages });
-      }
-
       const result = await limitedCrateModel
         .find({ ...options, isDeleted: false, endTime: { $gte: new Date() } })
         .skip((page - 1) * limit)
@@ -66,12 +57,6 @@ class LimitedCrateController {
           isDeleted: false,
           endTime: { $gte: new Date() },
         })) / limit,
-      );
-
-      redisConnection.setex(
-        key.join(':'),
-        900,
-        JSON.stringify({ result, totalPages }),
       );
 
       return ExpressResponse.success(res, 'Success', {
@@ -88,13 +73,6 @@ class LimitedCrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
-    const cache = await redisConnection.get(`limitedCrate:${id}`);
-
-    if (cache) {
-      const result = JSON.parse(cache);
-      return ExpressResponse.success(res, 'Success', { result });
-    }
-
     const result = await limitedCrateModel
       .findById(id)
       .select('-isDeleted -links');
@@ -102,8 +80,6 @@ class LimitedCrateController {
     if (!result) {
       return ExpressResponse.notFound(res, 'Limited Crate not found');
     }
-
-    redisConnection.setex(`limitedCrate:${id}`, 900, JSON.stringify(result));
 
     ExpressResponse.success(res, 'Success', { result });
   });

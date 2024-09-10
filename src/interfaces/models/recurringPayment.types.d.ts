@@ -7,7 +7,7 @@ type recurringPaymentType = {
   gateway: string;
   paymentId: string;
   price: number;
-  status: string;
+  status: boolean;
   duration: string;
   createdAt: Date;
   updatedAt: Date;

@@ -10,8 +10,6 @@ import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 
 import ExpressResponse from '../../libs/express/response.libs';
 
-import redisConnection from '../../connections/redis.connection';
-
 class premiumCrateController {
   public allActivepremiumCrates = catchAsync(
     async (req: Request, res: Response) => {
@@ -36,13 +34,6 @@ class premiumCrateController {
         key[5] = String(req.query.cast);
       }
 
-      const cache = await redisConnection.get(key.join(':'));
-
-      if (cache) {
-        const { result, totalPages } = JSON.parse(cache);
-        return ExpressResponse.success(res, 'Success', { result, totalPages });
-      }
-
       const result = await premiumCrateModel
         .find({ ...options, isDeleted: false })
         .skip((page - 1) * limit)
@@ -53,12 +44,6 @@ class premiumCrateController {
           ...options,
           isDeleted: false,
         })) / limit,
-      );
-
-      redisConnection.setex(
-        key.join(':'),
-        900,
-        JSON.stringify({ result, totalPages }),
       );
 
       return ExpressResponse.success(res, 'Success', {
@@ -75,13 +60,6 @@ class premiumCrateController {
       return ExpressResponse.badRequest(res, 'Invalid ID');
     }
 
-    const cache = await redisConnection.get(`premiumCrate:${id}`);
-
-    if (cache) {
-      const result = JSON.parse(cache);
-      return ExpressResponse.success(res, 'Success', { result });
-    }
-
     const result = await premiumCrateModel
       .findById(id)
       .select('-isDeleted -links');
@@ -90,9 +68,7 @@ class premiumCrateController {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
 
-
     // store in json format
-    redisConnection.setex(`premiumCrate:${id}`, 900, JSON.stringify(result));
 
     ExpressResponse.success(res, 'Success', { result });
   });

@@ -8,8 +8,6 @@ import orderHistoryModel from '../../models/orderHistory.model';
 import catchAsync from '../../utils/errorHandling/catchAsync.utils';
 import ExpressResponse from '../../libs/express/response.libs';
 
-import redisConnection from '../../connections/redis.connection';
-
 import { ReqCrateSchemaType } from '../../validations/Admin/crate/reqCrate.zod';
 import { GiftCrateSchemaType } from '../../validations/Admin/crate/giftCrate.zod';
 
@@ -81,8 +79,6 @@ class CrateController {
 
     await crateModel.create(parseDta);
 
-    redisConnection.flushall();
-
     return ExpressResponse.created(res, 'Crate created successfully');
   });
 
@@ -103,8 +99,6 @@ class CrateController {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
 
-    redisConnection.flushall();
-
     return ExpressResponse.accepted(res, 'Crate updated successfully');
   });
 
@@ -124,8 +118,6 @@ class CrateController {
     if (!deletedCrate) {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
-
-    redisConnection.flushall();
 
     return ExpressResponse.accepted(res, 'Crate deleted successfully');
   });
@@ -165,8 +157,6 @@ class CrateController {
     if (!restoredCrate) {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
-
-    redisConnection.flushall();
 
     return ExpressResponse.accepted(res, 'Crate restored successfully');
   });
