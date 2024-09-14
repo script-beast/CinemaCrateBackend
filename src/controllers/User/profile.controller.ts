@@ -151,11 +151,9 @@ class ProfileController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalPages = Math.ceil(
-      (await orderHistoryModel.countDocuments({ userId: id })) / limit,
-    );
+    const total = await orderHistoryModel.countDocuments({ userId: id });
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getMyOrders = catchAsync(async (req: Request, res: Response) => {
@@ -235,11 +233,9 @@ class ProfileController {
       },
     ]);
 
-    const totalPages = Math.ceil(
-      (await orderHistoryModel.countDocuments({ userId: id })) / limit,
-    );
+    const total = await orderHistoryModel.countDocuments({ userId: id });
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getMyRecuringOrders = catchAsync(
@@ -255,13 +251,11 @@ class ProfileController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await recurringPaymentModel.countDocuments({ userId: id })) / limit,
-      );
+      const total = await recurringPaymentModel.countDocuments({ userId: id });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );
@@ -280,11 +274,9 @@ class ProfileController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalPages = Math.ceil(
-      (await userModel.countDocuments({ referredBy: id })) / limit,
-    );
+    const total = await userModel.countDocuments({ referredBy: id });
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 }
 

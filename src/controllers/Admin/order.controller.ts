@@ -80,11 +80,9 @@ class OrderController {
       },
     ]);
 
-    const totalPages = Math.ceil(
-      (await orderHistoryModel.countDocuments(options)) / limit,
-    );
+    const total = await orderHistoryModel.countDocuments(options);
 
-    ExpressResponse.success(res, 'Success', { result, totalPages });
+    ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getOrderById = catchAsync(async (req: Request, res: Response) => {

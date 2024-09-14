@@ -107,13 +107,11 @@ class Transaction {
         },
       ]);
 
-      const totalPages = Math.ceil(
-        (await transactionModel.countDocuments(options)) / limit,
-      );
+      const total = await transactionModel.countDocuments(options);
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );
@@ -153,13 +151,11 @@ class Transaction {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await transactionModel.countDocuments({ userId })) / limit,
-      );
+      const total = await transactionModel.countDocuments({ userId });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );

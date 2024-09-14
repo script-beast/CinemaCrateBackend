@@ -29,14 +29,14 @@ class UserController {
       options = { ...options, mobile: req.query.mobile };
     }
 
-    const totalPages = Math.ceil((await userModel.countDocuments({})) / limit);
+    const total = await userModel.countDocuments({});
 
     const result = await userModel
       .find({})
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getUserDataById = catchAsync(async (req: Request, res: Response) => {

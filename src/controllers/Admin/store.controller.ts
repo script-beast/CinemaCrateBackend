@@ -19,11 +19,9 @@ class StoreController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalPages = Math.ceil(
-      (await storeModel.countDocuments({ isDeleted: false })) / limit,
-    );
+    const total = await storeModel.countDocuments({ isDeleted: false });
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getSingleStore = catchAsync(async (req: Request, res: Response) => {
@@ -103,11 +101,9 @@ class StoreController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalPages = Math.ceil(
-      (await storeModel.countDocuments({ isDeleted: true })) / limit,
-    );
+    const total = await storeModel.countDocuments({ isDeleted: true });
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public restoreStore = catchAsync(async (req: Request, res: Response) => {

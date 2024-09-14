@@ -17,6 +17,8 @@ class LimitedCrateController {
 
       let options = {};
 
+      options = { ...options, isDeleted: false, endTime: { $gte: new Date() } };
+
       if (req.query.category) {
         options = { ...options, category: req.query.category };
       }
@@ -34,22 +36,13 @@ class LimitedCrateController {
       }
 
       const result = await limitedCrateModel
-        .find({ ...options, isDeleted: false, endTime: { $gte: new Date() } })
+        .find({ ...options })
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await limitedCrateModel.countDocuments({
-          ...options,
-          isDeleted: false,
-          endTime: { $gte: new Date() },
-        })) / limit,
-      );
+      const total = await limitedCrateModel.countDocuments({ ...options });
 
-      return ExpressResponse.success(res, 'Success', {
-        result,
-        totalPages,
-      });
+      return ExpressResponse.success(res, 'Success', { result, total });
     },
   );
 
@@ -63,16 +56,14 @@ class LimitedCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await limitedCrateModel.countDocuments({
-          isDeleted: false,
-          endTime: { $lt: new Date() },
-        })) / limit,
-      );
+      const total = await limitedCrateModel.countDocuments({
+        isDeleted: false,
+        endTime: { $lt: new Date() },
+      });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );
@@ -176,13 +167,11 @@ class LimitedCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await limitedCrateModel.countDocuments({ isDeleted: true })) / limit,
-      );
+      const total = await limitedCrateModel.countDocuments({ isDeleted: true });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );

@@ -35,7 +35,7 @@ class CrateController {
       options = { ...options, casts: { $in: [req.query.cast] } };
     }
 
-    const totalPages = await crateModel.countDocuments({
+    const total = await crateModel.countDocuments({
       ...options,
       isDeleted: false,
     });
@@ -45,7 +45,7 @@ class CrateController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public crateById = catchAsync(async (req: Request, res: Response) => {

@@ -33,16 +33,14 @@ class PremiumCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await premiumCrateModel.countDocuments({
-          ...options,
-          isDeleted: false,
-        })) / limit,
-      );
+      const total = await premiumCrateModel.countDocuments({
+        ...options,
+        isDeleted: false,
+      });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );
@@ -129,13 +127,11 @@ class PremiumCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await premiumCrateModel.countDocuments({ isDeleted: true })) / limit,
-      );
+      const total = await premiumCrateModel.countDocuments({ isDeleted: true });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );

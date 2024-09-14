@@ -13,16 +13,14 @@ class ContactController {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const totalPages = Math.ceil(
-      (await contactModel.countDocuments({})) / limit,
-    );
+    const total = await contactModel.countDocuments({});
 
     const result = await contactModel
       .find({})
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getSingleContact = catchAsync(async (req: Request, res: Response) => {

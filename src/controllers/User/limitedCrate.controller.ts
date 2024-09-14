@@ -51,17 +51,15 @@ class LimitedCrateController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalPages = Math.ceil(
-        (await limitedCrateModel.countDocuments({
-          ...options,
-          isDeleted: false,
-          endTime: { $gte: new Date() },
-        })) / limit,
-      );
+      const total = await limitedCrateModel.countDocuments({
+        ...options,
+        isDeleted: false,
+        endTime: { $gte: new Date() },
+      });
 
       return ExpressResponse.success(res, 'Success', {
         result,
-        totalPages,
+        total,
       });
     },
   );

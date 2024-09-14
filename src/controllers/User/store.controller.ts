@@ -27,11 +27,9 @@ class StoreController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalPages = Math.ceil(
-      (await storeModel.countDocuments({ isDeleted: false })) / limit,
-    );
+    const total = await storeModel.countDocuments({ isDeleted: false });
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public storeById = catchAsync(async (req: Request, res: Response) => {

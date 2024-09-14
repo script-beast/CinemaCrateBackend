@@ -24,6 +24,8 @@ class CrateController {
 
     let options = {};
 
+    options = { ...options, isDeleted: false };
+
     if (req.query.category) {
       options = { ...options, category: req.query.category };
     }
@@ -36,17 +38,16 @@ class CrateController {
       options = { ...options, casts: { $in: [req.query.cast] } };
     }
 
-    const totalPages = Math.ceil(
-      (await crateModel.countDocuments({ ...options, isDeleted: false })) /
-        limit,
-    );
+    const total = await crateModel.countDocuments({
+      ...options,
+    });
 
     const result = await crateModel
-      .find({ ...options, isDeleted: false })
+      .find({ ...options })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    return ExpressResponse.success(res, 'Success', { result, totalPages });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public getSingleCrate = catchAsync(async (req: Request, res: Response) => {
@@ -131,14 +132,9 @@ class CrateController {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalPages = Math.ceil(
-      (await crateModel.countDocuments({ isDeleted: true })) / limit,
-    );
+    const total = await crateModel.countDocuments({ isDeleted: true });
 
-    return ExpressResponse.success(res, 'Success', {
-      result,
-      totalPages,
-    });
+    return ExpressResponse.success(res, 'Success', { result, total });
   });
 
   public restoreCrate = catchAsync(async (req: Request, res: Response) => {
