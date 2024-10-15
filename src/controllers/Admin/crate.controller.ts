@@ -11,11 +11,7 @@ import ExpressResponse from '../../libs/express/response.libs';
 import { ReqCrateSchemaType } from '../../validations/Admin/crate/reqCrate.zod';
 import { GiftCrateSchemaType } from '../../validations/Admin/crate/giftCrate.zod';
 
-import {
-  paymentGateway,
-  product,
-  transactionStatus,
-} from '../../interfaces/common/payment.enum';
+import { paymentGateway, product } from '../../interfaces/common/payment.enum';
 
 class CrateController {
   public getAllCrates = catchAsync(async (req: Request, res: Response) => {
@@ -36,6 +32,18 @@ class CrateController {
 
     if (req.query.cast) {
       options = { ...options, casts: { $in: [req.query.cast] } };
+    }
+
+    if (req.query.search) {
+      options = {
+        ...options,
+        $or: [
+          { name: { $regex: req.query.search as string, $options: 'i' } },
+          { genre: { $regex: req.query.search as string, $options: 'i' } },
+          { category: { $regex: req.query.search as string, $options: 'i' } },
+          { casts: { $in: [req.query.search as string] } },
+        ],
+      };
     }
 
     const total = await crateModel.countDocuments({
@@ -63,14 +71,7 @@ class CrateController {
       return ExpressResponse.notFound(res, 'Crate not found');
     }
 
-    const crateOrderHistory = await orderHistoryModel.find({
-      crateId: crate._id,
-    });
-
-    const result = {
-      crate,
-      crateOrderHistory,
-    };
+    const result = crate;
 
     return ExpressResponse.success(res, 'Success', { result });
   });
