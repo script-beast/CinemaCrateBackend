@@ -15,6 +15,9 @@ const userAuth = catchAsync(
 
     const token = req.headers.authorization.split(' ')[1];
 
+    if (jwtCommon.isTokenExpired(token))
+      return ExpressResponse.unauthorized(res, 'Unauthorized');
+
     const decoded = jwtCommon.decodeToken(token);
 
     if (!decoded) return ExpressResponse.unauthorized(res, 'Unauthorized');

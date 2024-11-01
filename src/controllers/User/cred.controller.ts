@@ -206,6 +206,9 @@ class CredController {
   public refreshToken = catchAsync(async (req: Request, res: Response) => {
     const { refreshToken } = req.body as RefreshTokenSchemaType;
 
+    if (jwtCommon.isTokenExpired(refreshToken))
+      return ExpressResponse.unauthorized(res, 'Unauthorized');
+
     const decoded = jwtCommon.verifyRefreshToken(refreshToken);
 
     if (!decoded) return ExpressResponse.badRequest(res, 'Invalid token');

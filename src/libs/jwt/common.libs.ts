@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import { jwtDecode } from 'jwt-decode';
 
 class jwtCommon {
   private static jwtSecret: string = process.env.JWT_SECRET!;
@@ -32,6 +33,13 @@ class jwtCommon {
 
   public static verifyRefreshToken = (token: string) => {
     return jwt.verify(token, jwtCommon.jwtRefreshSecret);
+  };
+
+  public static isTokenExpired = (token: string) => {
+    const decoded = jwtDecode(token);
+    if (!decoded) return true;
+    if (!decoded.exp) return true;
+    return Date.now() >= decoded.exp * 1000;
   };
 }
 
